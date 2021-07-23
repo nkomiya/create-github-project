@@ -1,12 +1,11 @@
 from pathlib import Path
-from typing import Union
 
 import click
 import questionary
 
 from create_github_project.resource_manager import ResourceManager
 
-_DEFAULT_PRODUCTION_BRANCH = 'master'
+PRODUCTION_BRANCHES = ['master', 'main']
 
 
 @click.group()
@@ -18,27 +17,26 @@ def cmd() -> None:
 
 @cmd.command(help="Initialize local Git repository.")
 @click.argument('repo_dir', type=click.Path(exists=False, path_type=Path))
-@click.option('--production', type=str, default=None,
-              help='Production branch name.')
-def init(repo_dir: Path, production: Union[str, None]) -> None:
+@click.option('--repo-name', type=str, default='',
+              help='GitHub repository name. Default is directory name of `repo_dir`.')
+@click.option('--production', type=click.Choice(PRODUCTION_BRANCHES), help='Production branch name.')
+def init(repo_dir: Path, repo_name: str, production: str) -> None:
     """ローカルリポジトリを初期化するコマンド。
 
     Args:
-        repo_dir (str): リポジトリ作成先
-        production (Union[str, None]): 本番用ブランチの名前
+        repo_dir (Path): リポジトリ作成先
+        repo_name (str): リポジトリ名
+        production (str): 本番用ブランチの名前
     """
     # リポジトリ作成先にフォルダ/ファイルが存在しないこと
     if repo_dir.exists():
         raise click.BadParameter(f'Directory {repo_dir.as_posix()} already exists.')
 
+    # リポジトリ名が未指定の場合は、リポジトリ作成先から推定する。
+    repo_name = repo_name or repo_dir.name
+
     # ブランチ名が未入力の場合
-    if production is None:
-        production = questionary.text(f'Production branch name [{_DEFAULT_PRODUCTION_BRANCH}]?').ask()
-        production = production or _DEFAULT_PRODUCTION_BRANCH
+    production = production or questionary.select('Production branch name?', choices=['master', 'main']).ask()
 
-    # ブランチ名のチェック
-    if not ResourceManager.validate_branch(production):
-        raise click.BadParameter(f"Branch name '{production}' is not allowed for production branch.")
-
-    rm = ResourceManager(repo_dir, production)
+    rm = ResourceManager(repo_dir, repo_name, production)
     rm.initialize()
