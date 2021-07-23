@@ -93,6 +93,21 @@
     - merge 方法　：　**Squash and merge**
 1. 作業者がデプロイ結果の確認を行い、問題がなければ完了。
 
+## ローカル開発環境のセットアップ
+
+1. [VS Code](https://code.visualstudio.com/) をインストールする。
+1. **Settings** から、保存時のコード整形 (format on save) を有効化する。
+
+    ![format_on_save](https://user-images.githubusercontent.com/49669363/126272780-d67648fe-1e72-42aa-939b-16d1dc6e197f.png)
+
+{% if languages -%}
+1. 下記リンク先のドキュメントに従い、言語ごとの設定を行う。
+
+    {% for lang in languages -%}
+    - [{{ lang.capitalize() }}](./docs/setup/{{ lang }}.md)
+    {% endfor %}
+{% endif -%}
+
 ## ディレクトリ構成
 
 <!-- TODO: 記載 -->

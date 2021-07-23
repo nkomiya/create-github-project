@@ -22,6 +22,7 @@ class ResourceManager:
         repo_dir (str): ローカルリポジトリのパス
         production (str): 本番用ブランチの名前
         develop (str): 開発用ブランチの名前
+        languages (List[str]): 利用言語
     """
 
     #: 開発用ブランチの名前
@@ -32,12 +33,24 @@ class ResourceManager:
     RESOURCES = Path(__file__).parent.joinpath('resources')
     #: versionrc のテンプレートへのパス
     VERSIONRC = RESOURCES.joinpath('core/release/.versionrc.json')
+    #: 言語ごとの環境設定手順
+    LANG = {
+        'python': [
+            'python.md'
+        ],
+        'java': [
+            'java.md',
+            'schema.xml'
+        ]
+    }
 
-    def __init__(self, repo_dir: str, repo_name: str, production: str, commit_types: List[str]) -> None:
+    def __init__(self, repo_dir: str, repo_name: str, production: str,
+                 commit_types: List[str], languages: List[str]) -> None:
         self._repo_dir = repo_dir
         self._repo_name = repo_name
         self._production = production
         self._commit_types = commit_types
+        self._languages = languages
 
     @classmethod
     def get_commit_types(cls) -> List[str]:
@@ -48,6 +61,15 @@ class ResourceManager:
         """
         with open(cls.VERSIONRC, 'r') as f:
             return [t['type'] for t in json.load(f)['types']]
+
+    @classmethod
+    def get_supported_language(cls) -> List[str]:
+        """設定手順が存在する言語の一覧を返す。
+
+        Returns:
+            List[str]: 言語
+        """
+        return list(cls.LANG.keys())
 
     @property
     def repo_dir(self) -> str:
@@ -86,7 +108,8 @@ class ResourceManager:
                 data = f.read()
             if path.suffix == '.jinja':
                 data = Template(data).render(repo_name=self._repo_name,
-                                             production_branch=self.production)
+                                             production_branch=self.production,
+                                             languages=self._languages)
                 dest = dest.parent.joinpath(dest.stem)
             if path.name == '.versionrc.json':
                 data = self.build_versionrc(data)
@@ -100,6 +123,16 @@ class ResourceManager:
             # save path to package.json
             if dest.name == 'package.json':
                 package_json = dest
+
+        # language specific files
+        for lang in self._languages:
+            for path in map(lambda x: self.RESOURCES.joinpath('lang').joinpath(x), self.LANG[lang]):
+                dest = root.joinpath(path.relative_to(self.RESOURCES / 'lang'))
+                dest = dest.parent.joinpath('docs/setup').joinpath(dest.name)
+                # copy
+                os.makedirs(dest.parent, exist_ok=True)
+                shutil.copy(path, dest)
+                repo.index.add([dest.relative_to(self.repo_dir).as_posix()])
 
         # create yarn.lock
         pwd = os.getcwd()
