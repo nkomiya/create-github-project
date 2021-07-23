@@ -20,6 +20,8 @@ class ResourceManager:
 
     #: 開発用ブランチの名前
     _DEVELOP = 'develop'
+    #: リリースブランチのプレフィックス
+    _RELEASE = 'release'
     #: リポジトリ初期化時のコミットメッセージ
     _COMMIT_MESSAGE = 'chore: initialize repository'
     #: リポジトリに格納するテンプレートファイルの格納先
@@ -28,6 +30,18 @@ class ResourceManager:
     def __init__(self, repo_dir: str, production: str) -> None:
         self._repo_dir = repo_dir
         self._production = production
+
+    @classmethod
+    def validate_branch(cls, production: str) -> bool:
+        """入力されたブランチ名が本番用ブランチとして利用可能かどうかを返す。
+
+        Args:
+            production (str): ブランチ名
+
+        Returns:
+            bool: 利用可能かどうか
+        """
+        return not (production == cls._DEVELOP or production.startswith(cls._RELEASE))
 
     @property
     def repo_dir(self) -> str:
