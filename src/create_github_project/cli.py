@@ -38,5 +38,10 @@ def init(repo_dir: Path, repo_name: str, production: str) -> None:
     # ブランチ名が未入力の場合
     production = production or questionary.select('Production branch name?', choices=['master', 'main']).ask()
 
-    rm = ResourceManager(repo_dir, repo_name, production)
+    # changelog に含める commit type
+    commit_types = questionary.checkbox('Commit types to be included CHANGELOG?',
+                                        choices=ResourceManager.get_commit_types()).ask()
+
+    # リポジトリ初期化
+    rm = ResourceManager(repo_dir, repo_name, production, commit_types)
     rm.initialize()

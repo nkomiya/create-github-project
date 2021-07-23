@@ -1,7 +1,9 @@
+import json
 import os
 from pathlib import Path
 import shutil
 import subprocess
+from typing import List
 
 import git
 from jinja2 import Template
@@ -14,6 +16,7 @@ class ResourceManager:
         repo_dir (str): リポジトリ作成先のパス
         repo_name (str): リポジトリ名
         production (str): 本番用ブランチの名前
+        commit_types (List[str]): changelog に含める commit type
 
     Attributes:
         repo_dir (str): ローカルリポジトリのパス
@@ -27,11 +30,24 @@ class ResourceManager:
     _COMMIT_MESSAGE = 'chore: initialize repository'
     #: リポジトリに格納するテンプレートファイルの格納先
     RESOURCES = Path(__file__).parent.joinpath('resources')
+    #: versionrc のテンプレートへのパス
+    VERSIONRC = RESOURCES.joinpath('core/release/.versionrc.json')
 
-    def __init__(self, repo_dir: str, repo_name: str, production: str) -> None:
+    def __init__(self, repo_dir: str, repo_name: str, production: str, commit_types: List[str]) -> None:
         self._repo_dir = repo_dir
         self._repo_name = repo_name
         self._production = production
+        self._commit_types = commit_types
+
+    @classmethod
+    def get_commit_types(cls) -> List[str]:
+        """コミット型の一覧を返す。
+
+        Returns:
+            List[str]: コミット型
+        """
+        with open(cls.VERSIONRC, 'r') as f:
+            return [t['type'] for t in json.load(f)['types']]
 
     @property
     def repo_dir(self) -> str:
@@ -72,6 +88,8 @@ class ResourceManager:
                 data = Template(data).render(repo_name=self._repo_name,
                                              production_branch=self.production)
                 dest = dest.parent.joinpath(dest.stem)
+            if path.name == '.versionrc.json':
+                data = self.build_versionrc(data)
 
             # write file and add to index
             os.makedirs(dest.parent, exist_ok=True)
@@ -96,3 +114,22 @@ class ResourceManager:
 
         # create develop branch
         repo.git.checkout(self.production, b=self.develop)
+
+    def build_versionrc(self, template: str) -> str:
+        """.versionrc.json を構築する。
+
+        Args:
+            template (str): .versionrc.json のテンプレート
+
+        Returns:
+            str: .versionrc.json の中身
+        """
+        data_as_json = json.loads(template)
+        types = []
+        for type_ in data_as_json['types']:
+            tmp = type_.copy()
+            if type_['type'] not in self._commit_types:
+                tmp['hidden'] = True
+            types.append(tmp)
+        data_as_json['types'] = types
+        return json.dumps(data_as_json, indent=4)
