@@ -1,26 +1,29 @@
 from pathlib import Path
 
-import git
+import click
 
-REPO_DIR = 'template'
-PRODUCTION_BRANCH = 'master'
-DEVELOP_BRANCH = 'develop'
-COMMIT_MESSAGE = 'chore: initialize repository'
+from create_github_project.resource_manager import ResourceManager
 
 
-def main():
-    # リポジトリ作成
-    repo = git.Repo.init(REPO_DIR)
-    repo.git.checkout(b=PRODUCTION_BRANCH)
+@click.group()
+def cmd() -> None:
+    """CLI のエントリーポイント。
+    """
+    pass
 
-    # TODO: 適切なファイルパスに変更する
-    root = Path(REPO_DIR)
-    readme = root.joinpath('README.md')
-    readme.touch()
 
-    # commit
-    repo.index.add([readme.relative_to(REPO_DIR).as_posix()])
-    repo.index.commit(COMMIT_MESSAGE)
+@cmd.command(help="ローカルリポジトリを初期化する。")
+@click.argument('repo_dir', type=click.Path(exists=False, path_type=Path))
+@click.option('--production', type=str, default='master',
+              help='Production branch name.')
+def init(repo_dir: Path, production: str) -> None:
+    """ローカルリポジトリを初期化用のコマンド。
 
-    # develop ブランチの作成
-    repo.git.checkout(PRODUCTION_BRANCH, b=DEVELOP_BRANCH)
+    Args:
+        repo_dir (str): リポジトリ作成先
+        production (str): 本番用ブランチの名前
+    """
+    if repo_dir.exists():
+        raise click.BadParameter(f'Directory {repo_dir.as_posix()} already exists.')
+    rm = ResourceManager(repo_dir, production)
+    rm.initialize()
