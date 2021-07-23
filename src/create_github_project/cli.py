@@ -1,12 +1,11 @@
 from pathlib import Path
-from typing import Union
 
 import click
 import questionary
 
 from create_github_project.resource_manager import ResourceManager
 
-_DEFAULT_PRODUCTION_BRANCH = 'master'
+PRODUCTION_BRANCHES = ['master', 'main']
 
 
 @click.group()
@@ -20,7 +19,7 @@ def cmd() -> None:
 @click.argument('repo_dir', type=click.Path(exists=False, path_type=Path))
 @click.option('--repo-name', type=str, default='',
               help='GitHub repository name. Default is directory name of `repo_dir`.')
-@click.option('--production', type=str, default='', help='Production branch name.')
+@click.option('--production', type=click.Choice(PRODUCTION_BRANCHES), help='Production branch name.')
 def init(repo_dir: Path, repo_name: str, production: str) -> None:
     """ローカルリポジトリを初期化するコマンド。
 
