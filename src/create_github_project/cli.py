@@ -39,8 +39,11 @@ def init(repo_dir: Path, repo_name: str, production: str) -> None:
     production = production or questionary.select('Production branch name?', choices=['master', 'main']).ask()
 
     # changelog に含める commit type
-    commit_types = questionary.checkbox('Commit types to be included CHANGELOG?',
-                                        choices=ResourceManager.get_commit_types()).ask()
+    choices = [
+        questionary.Choice(type_, checked=type_ in ['feat', 'fix', 'docs', 'perf'])
+        for type_ in ResourceManager.get_commit_types()
+    ]
+    commit_types = questionary.checkbox('Commit types to be included CHANGELOG?', choices=choices).ask()
 
     # リポジトリ初期化
     rm = ResourceManager(repo_dir, repo_name, production, commit_types)
