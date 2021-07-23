@@ -33,6 +33,13 @@ class ResourceManager:
     RESOURCES = Path(__file__).parent.joinpath('resources')
     #: versionrc のテンプレートへのパス
     VERSIONRC = RESOURCES.joinpath('core/release/.versionrc.json')
+    #: 常に複製するファイル郡
+    CORE = {
+        '*': {},
+        'release/*': {},
+        '.github/*': {},
+        '.github/issue_template/*': {}
+    }
     #: 言語ごとの環境設定手順
     LANG = {
         'python': [
@@ -89,19 +96,41 @@ class ResourceManager:
     def initialize(self) -> None:
         """ローカルリポジトリを初期化する。
         """
-        # repository root directory
-        root = Path(self.repo_dir)
         # checkout
         repo = git.Repo.init(self.repo_dir)
         repo.git.checkout(b=self.production)
-        # package.json
-        package_json = None
 
         # core files
-        for path in self.RESOURCES.glob('core/**/*'):
-            if os.path.isdir(path):
+        src_root = Path(self.RESOURCES.joinpath('core'))
+        for key, _ in self.CORE.items():
+            targets = list(src_root.glob(key))
+            self.add_to_index(repo, src_root, targets)
+
+        # language specific files
+        src_root = Path(self.RESOURCES.joinpath('lang'))
+        for lang in self._languages:
+            targets = map(src_root.joinpath, self.LANG[lang])
+            self.add_to_index(repo, src_root, targets, 'docs/setup')
+
+        # overwrite versionrc
+        self.overwrite_versionrc(repo)
+        # create yarn.lock
+        self.create_yarn_lock(repo)
+
+        # commit to production branch
+        repo.index.commit(self._COMMIT_MESSAGE)
+        # create develop branch
+        repo.git.checkout(self.production, b=self.develop)
+
+    def add_to_index(self, repo: git.Repo, src_root, targets, dest_prefix: str = '') -> None:
+        root = Path(self.repo_dir)
+
+        for path in targets:
+            if path.is_dir():
                 continue
-            dest = root.joinpath(path.relative_to(self.RESOURCES / 'core'))
+            dest = root.joinpath(path.relative_to(src_root))
+            if dest_prefix:
+                dest = dest.parent.joinpath(dest_prefix).joinpath(dest.name)
 
             # read data with rendering if necessary
             with open(path, 'r') as f:
@@ -111,8 +140,6 @@ class ResourceManager:
                                              production_branch=self.production,
                                              languages=self._languages)
                 dest = dest.parent.joinpath(dest.stem)
-            if path.name == '.versionrc.json':
-                data = self.build_versionrc(data)
 
             # write file and add to index
             os.makedirs(dest.parent, exist_ok=True)
@@ -120,49 +147,48 @@ class ResourceManager:
                 f.write(data)
             repo.index.add([dest.relative_to(self.repo_dir).as_posix()])
 
-            # save path to package.json
-            if dest.name == 'package.json':
-                package_json = dest
-
-        # language specific files
-        for lang in self._languages:
-            for path in map(lambda x: self.RESOURCES.joinpath('lang').joinpath(x), self.LANG[lang]):
-                dest = root.joinpath(path.relative_to(self.RESOURCES / 'lang'))
-                dest = dest.parent.joinpath('docs/setup').joinpath(dest.name)
-                # copy
-                os.makedirs(dest.parent, exist_ok=True)
-                shutil.copy(path, dest)
-                repo.index.add([dest.relative_to(self.repo_dir).as_posix()])
-
-        # create yarn.lock
-        pwd = os.getcwd()
-        os.chdir(package_json.parent)
-        subprocess.run(['yarn', 'install'])
-        shutil.rmtree('node_modules')
-        repo.index.add([package_json.parent.joinpath('yarn.lock').relative_to(self.repo_dir).as_posix()])
-        os.chdir(pwd)
-
-        # commit to production branch
-        repo.index.commit(self._COMMIT_MESSAGE)
-
-        # create develop branch
-        repo.git.checkout(self.production, b=self.develop)
-
-    def build_versionrc(self, template: str) -> str:
-        """.versionrc.json を構築する。
+    def overwrite_versionrc(self, repo: git.Repo) -> None:
+        """.versionrc.json を書き換える。
 
         Args:
-            template (str): .versionrc.json のテンプレート
-
-        Returns:
-            str: .versionrc.json の中身
+            repo (git.Repo): git repository
         """
-        data_as_json = json.loads(template)
-        types = []
-        for type_ in data_as_json['types']:
-            tmp = type_.copy()
-            if type_['type'] not in self._commit_types:
-                tmp['hidden'] = True
-            types.append(tmp)
-        data_as_json['types'] = types
-        return json.dumps(data_as_json, indent=4)
+        git_root = Path(repo.git_dir).parent
+        for path in map(git_root.joinpath, repo.git.ls_files().split('\n')):
+            if Path(path).name != '.versionrc.json':
+                continue
+
+            with open(path, 'r') as f:
+                versionrc = json.load(f)
+
+            types = []
+            for type_ in versionrc['types']:
+                tmp = type_.copy()
+                if type_['type'] not in self._commit_types:
+                    tmp['hidden'] = True
+                types.append(tmp)
+            versionrc['types'] = types
+
+            with open(path, 'w') as f:
+                f.write(json.dumps(versionrc, indent=4))
+
+            # add to staging
+            repo.index.add([path.relative_to(git_root).as_posix()])
+
+    def create_yarn_lock(self, repo: git.Repo) -> None:
+        """yarn.lock を作成する。
+
+        Args:
+            repo (git.Repo): git repository
+        """
+        git_root = Path(repo.git_dir).parent
+        for path in map(git_root.joinpath, repo.git.ls_files().split('\n')):
+            if Path(path).name != 'package.json':
+                continue
+
+            pwd = os.getcwd()
+            os.chdir(path.parent)
+            subprocess.run(['yarn', 'install'])
+            shutil.rmtree('node_modules')
+            repo.index.add([path.parent.joinpath('yarn.lock').relative_to(git_root).as_posix()])
+            os.chdir(pwd)
