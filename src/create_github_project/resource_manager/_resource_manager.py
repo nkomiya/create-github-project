@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+import shutil
+import subprocess
 
 import git
 from jinja2 import Template
@@ -54,6 +56,8 @@ class ResourceManager:
         # checkout
         repo = git.Repo.init(self.repo_dir)
         repo.git.checkout(b=self.production)
+        # package.json
+        package_json = None
 
         # core files
         for path in self.RESOURCES.glob('core/**/*'):
@@ -70,9 +74,22 @@ class ResourceManager:
                 dest = dest.parent.joinpath(dest.stem)
 
             # write file and add to index
+            os.makedirs(dest.parent, exist_ok=True)
             with open(dest, 'w') as f:
                 f.write(data)
             repo.index.add([dest.relative_to(self.repo_dir).as_posix()])
+
+            # save path to package.json
+            if dest.name == 'package.json':
+                package_json = dest
+
+        # create yarn.lock
+        pwd = os.getcwd()
+        os.chdir(package_json.parent)
+        subprocess.run(['yarn', 'install'])
+        shutil.rmtree('node_modules')
+        repo.index.add([package_json.parent.joinpath('yarn.lock').relative_to(self.repo_dir).as_posix()])
+        os.chdir(pwd)
 
         # commit to production branch
         repo.index.commit(self._COMMIT_MESSAGE)

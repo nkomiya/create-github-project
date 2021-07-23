@@ -1,0 +1,17 @@
+{
+    "version": "0.0.0",
+    "scripts": {
+        "release:minor": "standard-version --release-as minor --infile=../CHANGELOG.md",
+        "release:patch": "standard-version --release-as patch --infile=../CHANGELOG.md",
+        "release:major": "standard-version --release-as major --infile=../CHANGELOG.md"
+    },
+    "dependencies": {
+        "standard-version": "^9.3.1"
+    },
+    "standard-version": {
+        "skip": {
+            "commit": true,
+            "tag": true
+        }
+    }
+}
