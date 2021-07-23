@@ -24,6 +24,10 @@ jobs:
             --compareUrlFormat="https://github.com/${GITHUB_REPOSITORY}/compare/{{previousTag}}...{{currentTag}}"
           echo "::set-output name=version::$(jq -r .version package.json)"
 
+      - name: update python package version
+        run: |
+          sed -i 's/^__version__.*/__version__ = "${{steps.set_version.outputs.version}}"/' src/create_github_project/__init__.py
+
       - name: set pull request body
         run: |
           body=$(sed -e 's/^#\(#*\) \[/#\1 /' \
