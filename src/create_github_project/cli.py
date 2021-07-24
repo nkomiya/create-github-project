@@ -1,12 +1,18 @@
 import os
 from pathlib import Path
+import pip
 from typing import Dict, List, Union
 
 import click
+from github import Github
 import questionary
 
+from create_github_project import __version__ as VERSION
 from create_github_project.resource_manager import ResourceManager
 from create_github_project.accounts import Accounts
+
+# GitHub リポジトリに関する情報
+REPOSITORY = 'nkomiya/create-github-project'
 
 
 PRODUCTION_BRANCHES = ['master', 'main']
@@ -196,3 +202,15 @@ def drop(account_id: str) -> None:
     if not accounts.exists(account_id):
         raise click.BadParameter(f"Account '{account_id}' is not under management.")
     accounts.drop(account_id)
+
+
+@cmd.command()
+def update() -> None:
+    """新規リリースがある場合に package の更新を行う。
+    """
+    repo = Github().get_repo(REPOSITORY)
+    latest = list(repo.get_releases())[0]
+    if latest.tag_name.endswith(VERSION):
+        print('Up to date.')
+        return
+    pip.main(['install', f'git+https://github.com/{REPOSITORY}@{latest.tag_name}'])
