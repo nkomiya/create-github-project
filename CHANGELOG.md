@@ -1,6 +1,19 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [0.3.0](https://github.com/nkomiya/create-github-project/compare/v0.2.0...v0.3.0) (2021-07-24)
+
+
+### Features
+
+* add `update` command ([#47](https://github.com/nkomiya/create-github-project/issues/47)) ([4d7d3cb](https://github.com/nkomiya/create-github-project/commit/4d7d3cb902fce9471d8d403254b45e7915e4ff82))
+* add `version` commad ([#49](https://github.com/nkomiya/create-github-project/issues/49)) ([52e19d2](https://github.com/nkomiya/create-github-project/commit/52e19d240a1e2369a21a57e279a92b4448adb625))
+
+
+### Bug Fixes
+
+* wrong git command in follow up message ([#53](https://github.com/nkomiya/create-github-project/issues/53)) ([9376cea](https://github.com/nkomiya/create-github-project/commit/9376cea5267a45670b70c5107bb82607c40f90ff))
+
 ## [0.2.0](https://github.com/nkomiya/create-github-project/compare/v0.1.0...v0.2.0) (2021-07-24)
 
 
