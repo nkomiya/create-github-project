@@ -64,7 +64,7 @@ create-github-project init --help
 - 追加
 
     ```bash
-    create-github-project account add nkomiya --display-name 古宮
+    create-github-project account add nkomiya --display-name nkomiya
     ```
 
 - 一覧表示
