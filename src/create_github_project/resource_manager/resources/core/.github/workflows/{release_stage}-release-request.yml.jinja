@@ -15,6 +15,7 @@ jobs:
 
       - name: configure yarn
         run: yarn install
+        working-directory: ./release
 
       - name: set version
         id: set_version
@@ -25,6 +26,7 @@ jobs:
             --compareUrlFormat="https://github.com/${GITHUB_REPOSITORY}/compare/{{previousTag}}...{{currentTag}}"
           echo "::set-output name=version::$(jq -r .version package.json)"
 {%- endraw %}
+        working-directory: ./release
 
       - name: set pull request body
         run: |
