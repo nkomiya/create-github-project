@@ -33,6 +33,5 @@
             "type": "chore",
             "section": "Chore"
         }
-    ],
-    "releaseCommitMessageFormat": "chore: release v{{currentTag}}"
+    ]
 }
