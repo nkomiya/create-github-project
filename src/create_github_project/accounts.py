@@ -2,7 +2,7 @@ import json
 from operator import itemgetter
 import os
 from pathlib import Path
-from typing import Union
+from typing import Dict, List, Union
 
 from github import Github
 
@@ -37,6 +37,14 @@ class Accounts:
             bool: 管理下にあるかどうか
         """
         return account_id in self._accounts.keys()
+
+    def list(self) -> List[str]:
+        """管理下にある GitHub アカウント ID の一覧を返す。
+
+        Returns:
+            List[str]: 管理下にある GitHub アカウント ID
+        """
+        return list(self._accounts.keys())
 
     def dump_list(self) -> None:
         """管理下にある GitHub アカウントを標準出力に表示する。
@@ -89,6 +97,17 @@ class Accounts:
         # 情報更新
         _ = self._accounts.pop(account_id)
         self._update_file()
+
+    def get_account_info(self, account_id: str) -> Dict[str, str]:
+        """GitHub アカウント情報を返す。
+
+        Args:
+            account_id (str): GitHub アカウント ID
+
+        Returns:
+            Dict[str, str]: アカウント情報
+        """
+        return self._accounts[account_id]
 
     def _update_file(self):
         """アカウント一覧のファイルを更新する。

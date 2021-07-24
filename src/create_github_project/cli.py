@@ -28,7 +28,10 @@ def cmd() -> None:
 @click.option('--production', type=click.Choice(PRODUCTION_BRANCHES), help='Production branch name.')
 @click.option('--commit-types', type=str, help='Comma separated commit types to be included in CHANGELOG.md.')
 @click.option('--lang', type=str, help='Comma separated programming languages to be used in repository.')
-def init(repo_dir: Path, repo_name: str, production: str, lang: str, commit_types: str) -> None:
+@click.option('--code-review', type=str, help='Comma separated GitHub account ID for code reviewers.')
+@click.option('--release-review', type=str, help='Comma separated GitHub account ID for release reviewers.')
+def init(repo_dir: Path, repo_name: str, production: str, lang: str, commit_types: str,
+         code_review: str, release_review: str) -> None:
     """ローカルリポジトリを初期化するコマンド。
 
     Args:
@@ -37,10 +40,13 @@ def init(repo_dir: Path, repo_name: str, production: str, lang: str, commit_type
         production (str): 本番用ブランチの名前
         lang (str): カンマ区切りのプログラミング言語
         commit_types (str): カンマ区切りの commit type
+        code_review (str): カンマ区切り コードレビュー担当者の GitHub アカウント ID
+        release_review (str): カンマ区切り リリースレビュー担当者 GitHub アカウント ID
     """
     # リポジトリ作成先にフォルダ/ファイルが存在しないこと
     if repo_dir.exists():
         raise click.BadParameter(f'Directory {repo_dir.as_posix()} already exists.')
+    accounts = Accounts()
 
     # commit type
     types = to_choices('commit type', commit_types, SUPPORTED_COMMIT_TYPES)
@@ -62,8 +68,21 @@ def init(repo_dir: Path, repo_name: str, production: str, lang: str, commit_type
     if languages is None:
         languages = questionary.checkbox('Programming languages to be used?', choices=SUPPORTED_LANGUAGES).ask()
 
+    # レビュアー
+    account_list = accounts.list()
+    code_review = to_choices('code-review', code_review, account_list)
+    code_review = {
+        aid: accounts.get_account_info(aid)
+        for aid in code_review or questionary.checkbox('Who should review code changes?', choices=account_list).ask()
+    }
+    release_review = to_choices('release-review', release_review, account_list)
+    release_review = {
+        aid: accounts.get_account_info(aid)
+        for aid in release_review or questionary.checkbox('Who should review on release?', choices=account_list).ask()
+    }
+
     # リポジトリ初期化
-    rm = ResourceManager(repo_dir, repo_name, production, types, languages)
+    rm = ResourceManager(repo_dir, repo_name, production, types, languages, code_review, release_review)
     rm.initialize()
 
     # メッセージ

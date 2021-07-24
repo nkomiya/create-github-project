@@ -51,8 +51,15 @@
             - `${commit_message}` : PR が merge される際に利用されるべきコミットメッセージ
         - 補足
             - 本リポジトリでは、コミットメッセージの形式として [conventional commits](https://www.conventionalcommits.org/ja/) を採用する。
-    - レビュアー
-        - xxx
+    {%- if code_review %}
+        - レビュアー
+        {%- for account_id, info in code_review.items() %}
+            - {{ account_id }} ({{ info['display_name'] }})
+        {%- endfor -%}
+    {%- else %}
+        - レビュアー
+            - TODO: 適切なコードレビュアーを指定する
+    {%- endif %}
 6. レビューが完了したら、リポジトリ管理者が merge する。
     - merge 方法　：　**Squash and merge**
 7. デプロイ先の環境で動作確認を行い、問題がなければ完了。
@@ -64,8 +71,15 @@
 ステージング環境へのリリースの契機となる、{{ production_branch }} ブランチの更新方法は下記の通り。
 
 1. 作業者が develop ➔ {{ production_branch }} に PR を作成。
+{%- if release_review %}
+    - レビュアー (自動指定)
+    {%- for account_id, info in release_review.items() %}
+        - {{ account_id }} ({{ info['display_name'] }})
+    {%- endfor -%}
+{%- else %}
     - レビュアー
-        - xxx
+        - TODO: 適切なリリースのレビュアーを指定する
+{%- endif %}
 1. レビューが完了したら、リポジトリ管理者が merge する。
     - merge 方法　：　**Create a merge commit**
     - コミットメッセージの形式は不問
@@ -85,13 +99,35 @@
         |メジャー|major-release-request|
 
     - ブランチ ： {{ production_branch }}
-
-1. 作業者が、手順1により作成された PR にてレビュアーを指定する。
+1. 作業者は PR が作成されたことを確認した後、リリースのレビューを依頼する。
+{%- if release_review %}
+    - レビュアー (自動指定)
+    {%- for account_id, info in release_review.items() %}
+        - {{ account_id }} ({{ info['display_name'] }})
+    {%- endfor -%}
+{%- else %}
     - レビュアー
-        - xxx
-1. レビューが完了したら、リポジトリ管理者は merge を行った後、release ブランチを削除する。
+        - TODO: 適切なリリースのレビュアーを指定する
+{%- endif %}
+1. レビューが完了したら、リポジトリ管理者が merge を行った後、release ブランチを削除する。
     - merge 方法　：　**Squash and merge**
 1. 作業者がデプロイ結果の確認を行い、問題がなければ完了。
+
+#### レビュアーの変更
+
+本番環境へのリリース時のレビュアーは GitHub Actions によって自動指定される。
+これを変更するには、各 workflow の最終ステップにて、with.reviewers を変更する。
+
+変更対象のファイルは下記3つ。
+
+|リリース形式|対象ファイル|
+|:--|:--|
+|major|[major-release-request.yml](./.github/workflows/major-release-request.yml)|
+|minor|[minor-release-request.yml](./.github/workflows/minor-release-request.yml)|
+|patch|[patch-release-request.yml](./.github/workflows/patch-release-request.yml)|
+
+- 参考
+    - [create-pull-request](https://github.com/marketplace/actions/create-pull-request)
 
 ## ローカル開発環境のセットアップ
 

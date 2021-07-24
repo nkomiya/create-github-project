@@ -54,4 +54,8 @@ jobs:
           base: master
           branch: release-v${{ steps.set_version.outputs.version }}
           delete-branch: true
-{% endraw -%}
+{%- endraw -%}
+{%- if release_review %}
+          reviewers: "{{ ','.join(release_review.keys()) }}"
+{% else %}
+{% endif %}
