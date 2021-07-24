@@ -1,8 +1,6 @@
 import json
 import os
 from pathlib import Path
-import shutil
-import subprocess
 from typing import Dict, List, Union
 
 import git
@@ -124,8 +122,6 @@ class ResourceManager:
 
         # overwrite versionrc
         self.overwrite_versionrc(repo)
-        # create yarn.lock
-        self.create_yarn_lock(repo)
 
         # commit to production branch
         repo.index.commit(self._COMMIT_MESSAGE)
@@ -211,21 +207,3 @@ class ResourceManager:
 
             # add to staging
             repo.index.add([path.relative_to(git_root).as_posix()])
-
-    def create_yarn_lock(self, repo: git.Repo) -> None:
-        """yarn.lock を作成する。
-
-        Args:
-            repo (git.Repo): git repository
-        """
-        git_root = Path(repo.git_dir).parent
-        for path in map(git_root.joinpath, repo.git.ls_files().split('\n')):
-            if Path(path).name != 'package.json':
-                continue
-
-            pwd = os.getcwd()
-            os.chdir(path.parent)
-            subprocess.run(['yarn', 'install'])
-            shutil.rmtree('node_modules')
-            repo.index.add([path.parent.joinpath('yarn.lock').relative_to(git_root).as_posix()])
-            os.chdir(pwd)
