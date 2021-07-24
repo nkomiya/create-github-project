@@ -78,3 +78,19 @@ create-github-project init --help
     ```bash
     create-github-project account drop nkomiya
     ```
+
+### ツールのバージョン管理
+
+#### バージョンのアップデート
+
+最新版のリリースが GitHub 上に存在する場合、下記コマンドによりアップデートが可能。
+
+```bash
+create-github-project update
+```
+
+#### 現行のバージョン確認
+
+```bash
+create-github-project version
+```
