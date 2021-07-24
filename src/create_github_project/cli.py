@@ -6,13 +6,15 @@ import click
 import questionary
 
 from create_github_project.resource_manager import ResourceManager
+from create_github_project.accounts import Accounts
+
 
 PRODUCTION_BRANCHES = ['master', 'main']
 SUPPORTED_COMMIT_TYPES = ResourceManager.get_commit_types()
 SUPPORTED_LANGUAGES = ResourceManager.get_supported_language()
 
 
-@click.group()
+@click.group(help='Command line tool to create templated Git project.')
 def cmd() -> None:
     """CLI のエントリーポイント。
     """
@@ -99,3 +101,62 @@ def to_choices(name: str, choices_str: Union[str, None], allowed: List[str]) -> 
     if unsupported:
         raise click.BadParameter(f'Unsupported {name} designated: {",".join(unsupported)}')
     return choices
+
+
+@cmd.group(help='Manage GitHub account to set reviewers.')
+def account() -> None:
+    pass
+
+
+@account.command(name='list', help='List GitHub account under managements.')
+def _list() -> None:
+    """管理下にある GitHub アカウントの一覧を出力する。
+    """
+    Accounts().dump_list()
+
+
+@account.command(help='Add GitHub account under managements.')
+@click.argument('account_id', type=str)
+@click.option('--display-name', type=str, help='Display name for this user.', required=True)
+def add(account_id: str, display_name: str) -> None:
+    """GitHub アカウントをツールの管理下に登録する。
+
+    Args:
+        account_id (str): GitHub アカウント ID
+        display_name (str): 表示名
+
+    Raises:
+        click.BadParameter: 対象アカウントが存在しない場合
+    """
+    accounts = Accounts()
+
+    # 対象アカウントが管理下にある場合は何もしない。
+    if accounts.exists(account_id):
+        print(f"GitHub Account '{account_id}' already under management.")
+        return
+
+    homepage = accounts.add(account_id, display_name)
+    if homepage is None:
+        raise click.BadParameter(f"Account '{account_id}' not exist.")
+
+    # メッセージ
+    print('\n'.join([
+        'Following GitHub account added under management.\n',
+        f'  - account ID   : {account_id}',
+        f'  - Display name : {display_name}',
+        f'  - homepage     : {homepage}'
+    ]))
+
+
+@account.command(help='Drop GitHub account under managements.')
+@click.argument('account_id', type=str)
+def drop(account_id: str) -> None:
+    """ツール管理下にある GitHub アカウントを管理から外す。
+
+    Args:
+        account_id (str): GitHub アカウント ID
+    """
+    accounts = Accounts()
+    if not accounts.exists(account_id):
+        raise click.BadParameter(f"Account '{account_id}' is not under management.")
+    accounts.drop(account_id)
