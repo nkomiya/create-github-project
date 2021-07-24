@@ -1,4 +1,4 @@
-# GitHub プロジェクト 自動作成ツール
+# GitHub プロジェクト 雛形作成ツール
 
 ## 前提条件
 
@@ -39,8 +39,58 @@ python -m venv ${INSTALL_DIR}
 
 ## 使用方法
 
-### GitHub リポジトリのテンプレートを作成する
+### Git リポジトリの雛形作成
+
+下記コマンドの実行により、ローカル PC に Git リポジトリの雛形が作成される。
 
 ```bash
 create-github-project init sample-project
+```
+
+#### リポジトリ作成時のオプションの表示
+
+リポジトリ作成時のオプション項目は、指定が無い場合は CLI により指定が促される。
+上記挙動が煩わしい場合は、CLI のオプションによるオプション項目の指定が利用可能。
+
+```bash
+create-github-project init --help
+```
+
+### レビュアーの管理
+
+本ツールにて作成される Git リポジトリには、リリースの PR を作成する GitHub Actions が含まれる。
+この PR へレビュアーを自動割当されるようにするには、レビュアーに指定したい GitHub アカウントをリポジトリ作成前に事前登録する必要がある。
+
+- 追加
+
+    ```bash
+    create-github-project account add nkomiya --display-name nkomiya
+    ```
+
+- 一覧表示
+
+    ```bash
+    create-github-project account list
+    ```
+
+- 削除
+
+    ```bash
+    create-github-project account drop nkomiya
+    ```
+
+### ツールのバージョン管理
+
+#### バージョンのアップデート
+
+最新版のリリースが GitHub 上に存在する場合、下記コマンドによりアップデートが可能。
+
+```bash
+create-github-project update
+```
+
+#### 現行のバージョン確認
+
+```bash
+create-github-project version
 ```

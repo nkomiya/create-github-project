@@ -30,7 +30,7 @@ def cmd() -> None:
 @cmd.command(help="Initialize local Git repository.")
 @click.argument('repo_dir', type=click.Path(exists=False, path_type=Path))
 @click.option('--repo-name', type=str, default='',
-              help='GitHub repository name. Default is directory name of `repo_dir`.')
+              help='GitHub repository name. Default is directory name of `REPO_DIR`.')
 @click.option('--production', type=click.Choice(PRODUCTION_BRANCHES), help='Production branch name.')
 @click.option('--commit-types', type=str, help='Comma separated commit types to be included in CHANGELOG.md.')
 @click.option('--lang', type=str, help='Comma separated programming languages to be used in repository.')
