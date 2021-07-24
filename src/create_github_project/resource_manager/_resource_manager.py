@@ -54,12 +54,15 @@ class ResourceManager:
     }
 
     def __init__(self, repo_dir: str, repo_name: str, production: str,
-                 commit_types: List[str], languages: List[str]) -> None:
+                 commit_types: List[str], languages: List[str],
+                 code_review: Dict[str, Dict[str, str]], release_review: Dict[str, Dict[str, str]]) -> None:
         self._repo_dir = repo_dir
         self._repo_name = repo_name
         self._production = production
         self._commit_types = commit_types
         self._languages = languages
+        self._code_review = code_review
+        self._release_review = release_review
 
     @classmethod
     def get_commit_types(cls) -> List[str]:
@@ -171,6 +174,7 @@ class ResourceManager:
                 data = Template(data).render(repo_name=self._repo_name,
                                              production_branch=self.production,
                                              languages=self._languages,
+                                             release_review=self._release_review,
                                              **params)
                 dest = dest.parent.joinpath(dest.stem)
 

@@ -56,3 +56,4 @@ jobs:
           draft: false
           prerelease: false
 {%- endraw %}
+          reviewers: "{{ ','.join(release_review.keys()) }}"
