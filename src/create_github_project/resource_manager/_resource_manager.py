@@ -174,6 +174,7 @@ class ResourceManager:
                 data = Template(data).render(repo_name=self._repo_name,
                                              production_branch=self.production,
                                              languages=self._languages,
+                                             code_review=self._code_review,
                                              release_review=self._release_review,
                                              **params)
                 dest = dest.parent.joinpath(dest.stem)

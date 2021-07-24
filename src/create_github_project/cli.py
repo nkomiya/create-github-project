@@ -73,12 +73,12 @@ def init(repo_dir: Path, repo_name: str, production: str, lang: str, commit_type
     code_review = to_choices('code-review', code_review, account_list)
     code_review = {
         aid: accounts.get_account_info(aid)
-        for aid in code_review or questionary.checkbox('Who should review code changes?', choices=accounts).ask()
+        for aid in code_review or questionary.checkbox('Who should review code changes?', choices=account_list).ask()
     }
     release_review = to_choices('release-review', release_review, account_list)
     release_review = {
         aid: accounts.get_account_info(aid)
-        for aid in release_review or questionary.checkbox('Who should review on release?', choices=accounts).ask()
+        for aid in release_review or questionary.checkbox('Who should review on release?', choices=account_list).ask()
     }
 
     # リポジトリ初期化
