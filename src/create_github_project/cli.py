@@ -88,8 +88,8 @@ def init(repo_dir: Path, repo_name: str, production: str, lang: str, commit_type
         'Suggested actions:',
         '  - Initialize remote branches\n',
         '    git remote add origin <Remote repository URL>',
-        '    git origin develop',
-        '    git origin --all\n',
+        '    git push origin develop',
+        '    git push origin --all\n',
         '  - Activate GitHub workflows by visiting Actions tab.\n',
     ]))
 
