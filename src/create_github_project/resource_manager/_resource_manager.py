@@ -34,12 +34,13 @@ class ResourceManager:
     #: versionrc のテンプレートへのパス
     VERSIONRC = RESOURCES.joinpath('core/release/.versionrc.json')
     #: 常に複製するファイル郡
-    CORE = {
-        '*': {},
-        'release/*': {},
-        '.github/*': {},
-        '.github/issue_template/*': {},
-    }
+    CORE = [
+        '*',
+        'release/*',
+        '.github/*',
+        '.github/issue_template/*',
+        '.github/workflows/do-release*',
+    ]
     #: GitHub workflow
     RELEASE_WORKFLOW = '.github/workflows/{release_stage}-release-request.yml.jinja'
     RELEASE_STAGES = ['patch', 'minor', 'major']
@@ -105,7 +106,7 @@ class ResourceManager:
 
         # core files
         src_root = Path(self.RESOURCES.joinpath('core'))
-        for key, _ in self.CORE.items():
+        for key in self.CORE:
             targets = list(src_root.glob(key))
             self.add_to_index(repo, src_root, targets)
 

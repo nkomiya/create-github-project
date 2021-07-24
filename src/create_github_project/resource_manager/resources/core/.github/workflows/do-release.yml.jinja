@@ -1,0 +1,58 @@
+name: do-release
+
+on:
+  pull_request:
+    branches:
+      - {{ production_branch }}
+    types:
+      - closed
+
+{% raw -%}
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'release-')
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: configure git
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: set version
+        id: set_version
+        run: |
+          echo "::set-output name=version::$(jq -r .version package.json)"
+
+      - name: set release body
+        run: |
+          body=$(sed -e 's/^#\(#*\) \[/#\1 /' \
+                     -e '1,/^###* ${{ steps.set_version.outputs.version }}/d' \
+                     -e '/^##* [0-9]/,$d' \
+                     CHANGELOG.md)
+          echo 'BODY<<EOF' >> $GITHUB_ENV
+          echo "${body}" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - name: set version
+        run: |
+          version="v${{ steps.set_version.outputs.version }}"
+          # set tag
+          git tag ${version}
+          git push origin ${version}
+
+      - name: create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: "v${{ steps.set_version.outputs.version }}"
+          release_name: "Release v${{ steps.set_version.outputs.version }}"
+          body: |
+            ${{ env.BODY }}
+          draft: false
+          prerelease: false
+{%- endraw %}
