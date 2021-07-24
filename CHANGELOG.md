@@ -1,6 +1,19 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [0.2.0](https://github.com/nkomiya/create-github-project/compare/v0.1.0...v0.2.0) (2021-07-24)
+
+
+### Features
+
+* allow empty string for list option ([#42](https://github.com/nkomiya/create-github-project/issues/42)) ([cfd6ef2](https://github.com/nkomiya/create-github-project/commit/cfd6ef286f26d42bef459857dd2d5ed3afed5e11))
+
+
+### Bug Fixes
+
+* `init` command fail if no github accounts are added ([#40](https://github.com/nkomiya/create-github-project/issues/40)) ([f5dca02](https://github.com/nkomiya/create-github-project/commit/f5dca02f13d14f6c5766a8cb761864933097cfd9))
+* modify package version ([#38](https://github.com/nkomiya/create-github-project/issues/38)) ([0fca632](https://github.com/nkomiya/create-github-project/commit/0fca63221afa63677e2eef080a81b88660a1dc80))
+
 ## 0.1.0 (2021-07-24)
 
 
