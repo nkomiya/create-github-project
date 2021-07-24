@@ -135,21 +135,21 @@ def parse_reviewer(reviewers: str, key: str, question: str) -> Dict[str, Dict[st
     return {aid: accounts.get_account_info(aid) for aid in account_ids}
 
 
-@ cmd.group(help='Manage GitHub account to set reviewers.')
+@cmd.group(help='Manage GitHub account to set reviewers.')
 def account() -> None:
     pass
 
 
-@ account.command(name='list', help='List GitHub account under managements.')
+@account.command(name='list', help='List GitHub account under managements.')
 def _list() -> None:
     """管理下にある GitHub アカウントの一覧を出力する。
     """
     Accounts().dump_list()
 
 
-@ account.command(help='Add GitHub account under managements.')
-@ click.argument('account_id', type=str)
-@ click.option('--display-name', type=str, help='Display name for this user.', required=True)
+@account.command(help='Add GitHub account under managements.')
+@click.argument('account_id', type=str)
+@click.option('--display-name', type=str, help='Display name for this user.', required=True)
 def add(account_id: str, display_name: str) -> None:
     """GitHub アカウントをツールの管理下に登録する。
 
@@ -180,8 +180,8 @@ def add(account_id: str, display_name: str) -> None:
     ]))
 
 
-@ account.command(help='Drop GitHub account under managements.')
-@ click.argument('account_id', type=str)
+@account.command(help='Drop GitHub account under managements.')
+@click.argument('account_id', type=str)
 def drop(account_id: str) -> None:
     """ツール管理下にある GitHub アカウントを管理から外す。
 
