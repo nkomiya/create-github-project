@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import List, Union
+from typing import Dict, List, Union
 
 import click
 import questionary
@@ -46,7 +46,6 @@ def init(repo_dir: Path, repo_name: str, production: str, lang: str, commit_type
     # リポジトリ作成先にフォルダ/ファイルが存在しないこと
     if repo_dir.exists():
         raise click.BadParameter(f'Directory {repo_dir.as_posix()} already exists.')
-    accounts = Accounts()
 
     # commit type
     types = to_choices('commit type', commit_types, SUPPORTED_COMMIT_TYPES)
@@ -69,17 +68,8 @@ def init(repo_dir: Path, repo_name: str, production: str, lang: str, commit_type
         languages = questionary.checkbox('Programming languages to be used?', choices=SUPPORTED_LANGUAGES).ask()
 
     # レビュアー
-    account_list = accounts.list()
-    code_review = to_choices('code-review', code_review, account_list)
-    code_review = {
-        aid: accounts.get_account_info(aid)
-        for aid in code_review or questionary.checkbox('Who should review code changes?', choices=account_list).ask()
-    }
-    release_review = to_choices('release-review', release_review, account_list)
-    release_review = {
-        aid: accounts.get_account_info(aid)
-        for aid in release_review or questionary.checkbox('Who should review on release?', choices=account_list).ask()
-    }
+    code_review = parse_reviewer(code_review, 'code-review', 'Who should review code changes?')
+    release_review = parse_reviewer(release_review, 'release-review', 'Who should review on release?')
 
     # リポジトリ初期化
     rm = ResourceManager(repo_dir, repo_name, production, types, languages, code_review, release_review)
@@ -122,21 +112,44 @@ def to_choices(name: str, choices_str: Union[str, None], allowed: List[str]) -> 
     return choices
 
 
-@cmd.group(help='Manage GitHub account to set reviewers.')
+def parse_reviewer(reviewers: str, key: str, question: str) -> Dict[str, Dict[str, str]]:
+    """カンマ区切りで指定されたレビュアーを辞書形式に変換する。
+
+    Args:
+        reviewers (str): レビュアー
+        key (str): レビュー項目
+        question (str): プロンプトに表示する質問
+
+    Returns:
+        Dict[str, Dict[str, str]]: レビュアー
+    """
+    accounts = Accounts()
+    availabe_account = accounts.list()
+
+    account_ids = to_choices(key, reviewers, availabe_account) or []
+    # 選択可能なアカウントが存在する場合は、prompt で確認を促す。
+    if availabe_account:
+        account_ids = account_ids or questionary.checkbox(question, choices=availabe_account).ask()
+
+    # 付帯情報を付与した辞書として返す
+    return {aid: accounts.get_account_info(aid) for aid in account_ids}
+
+
+@ cmd.group(help='Manage GitHub account to set reviewers.')
 def account() -> None:
     pass
 
 
-@account.command(name='list', help='List GitHub account under managements.')
+@ account.command(name='list', help='List GitHub account under managements.')
 def _list() -> None:
     """管理下にある GitHub アカウントの一覧を出力する。
     """
     Accounts().dump_list()
 
 
-@account.command(help='Add GitHub account under managements.')
-@click.argument('account_id', type=str)
-@click.option('--display-name', type=str, help='Display name for this user.', required=True)
+@ account.command(help='Add GitHub account under managements.')
+@ click.argument('account_id', type=str)
+@ click.option('--display-name', type=str, help='Display name for this user.', required=True)
 def add(account_id: str, display_name: str) -> None:
     """GitHub アカウントをツールの管理下に登録する。
 
@@ -167,8 +180,8 @@ def add(account_id: str, display_name: str) -> None:
     ]))
 
 
-@account.command(help='Drop GitHub account under managements.')
-@click.argument('account_id', type=str)
+@ account.command(help='Drop GitHub account under managements.')
+@ click.argument('account_id', type=str)
 def drop(account_id: str) -> None:
     """ツール管理下にある GitHub アカウントを管理から外す。
 
