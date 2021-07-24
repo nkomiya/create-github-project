@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import List, Union
 
@@ -62,6 +63,18 @@ def init(repo_dir: Path, repo_name: str, production: str, lang: str, commit_type
     # リポジトリ初期化
     rm = ResourceManager(repo_dir, repo_name, production, types, languages)
     rm.initialize()
+
+    # メッセージ
+    print('\n'.join([
+        'Repository created to the following path:\n',
+        f'  {os.path.abspath(repo_dir)}\n',
+        'Suggested actions:',
+        '  - Initialize remote branches\n',
+        '    git remote add origin <Remote repository URL>',
+        '    git origin develop',
+        '    git origin --all\n',
+        '  - Activate GitHub workflows by visiting Actions tab.\n',
+    ]))
 
 
 def to_choices(name: str, choices_str: Union[str, None], allowed: List[str]) -> Union[List[str], None]:
