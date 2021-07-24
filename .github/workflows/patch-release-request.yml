@@ -28,6 +28,10 @@ jobs:
         run: |
           sed -i 's/^__version__.*/__version__ = "${{steps.set_version.outputs.version}}"/' src/create_github_project/__init__.py
 
+      - name: update install command
+        run: |
+          sed -i 's/create-github-project@v[0-9]\{1,\}\(\.[0-9]\{1,\}\)\{2\}/create-github-project@v${{steps.set_version.outputs.version}}/' README.md
+
       - name: set pull request body
         run: |
           body=$(sed -e 's/^#\(#*\) \[/#\1 /' \
