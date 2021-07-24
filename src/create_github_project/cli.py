@@ -204,7 +204,7 @@ def drop(account_id: str) -> None:
     accounts.drop(account_id)
 
 
-@cmd.command()
+@cmd.command(help='Update version if available newer versions exist.')
 def update() -> None:
     """新規リリースがある場合に package の更新を行う。
     """
@@ -214,3 +214,10 @@ def update() -> None:
         print('Up to date.')
         return
     pip.main(['install', f'git+https://github.com/{REPOSITORY}@{latest.tag_name}'])
+
+
+@cmd.command(help='Desplay version.')
+def version() -> None:
+    """パッケージのバージョンを表示する。
+    """
+    print(f'create-github-project version: {VERSION}')
