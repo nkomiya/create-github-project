@@ -105,6 +105,9 @@ def to_choices(name: str, choices_str: Union[str, None], allowed: List[str]) -> 
     if choices_str is None:
         return None
 
+    if choices_str == '':
+        return []
+
     choices = list(set(choices_str.split(',')))
     unsupported = set(choices) - set(allowed)
     if unsupported:
@@ -126,10 +129,11 @@ def parse_reviewer(reviewers: str, key: str, question: str) -> Dict[str, Dict[st
     accounts = Accounts()
     availabe_account = accounts.list()
 
-    account_ids = to_choices(key, reviewers, availabe_account) or []
-    # 選択可能なアカウントが存在する場合は、prompt で確認を促す。
-    if availabe_account:
-        account_ids = account_ids or questionary.checkbox(question, choices=availabe_account).ask()
+    account_ids = to_choices(key, reviewers, availabe_account)
+    # レビュアーが未指定の場合
+    if account_ids is None:
+        # 選択可能なアカウントが存在する場合にのみ、prompt で確認を促す。
+        account_ids = questionary.checkbox(question, choices=availabe_account).ask() if availabe_account else []
 
     # 付帯情報を付与した辞書として返す
     return {aid: accounts.get_account_info(aid) for aid in account_ids}
