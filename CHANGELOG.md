@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Features
 
 * add `update` command ([#47](https://github.com/nkomiya/create-github-project/issues/47)) ([4d7d3cb](https://github.com/nkomiya/create-github-project/commit/4d7d3cb902fce9471d8d403254b45e7915e4ff82))
-* add `version` commad ([#49](https://github.com/nkomiya/create-github-project/issues/49)) ([52e19d2](https://github.com/nkomiya/create-github-project/commit/52e19d240a1e2369a21a57e279a92b4448adb625))
+* add `version` command ([#49](https://github.com/nkomiya/create-github-project/issues/49)) ([52e19d2](https://github.com/nkomiya/create-github-project/commit/52e19d240a1e2369a21a57e279a92b4448adb625))
 
 
 ### Bug Fixes
