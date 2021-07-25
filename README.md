@@ -3,6 +3,8 @@
 ## 前提条件
 
 - Python 3.7 以降がインストールされていること
+- 補完を有効にする場合
+    - Bash shell を利用する場合は、Bash のバージョンが 4.4 以降であること
 
 ## セットアップ手順
 
@@ -18,24 +20,44 @@ python -m venv ${INSTALL_DIR}
 
 ### 2. インストールと設定
 
-- install
+#### インストール
+
+```bash
+${INSTALL_DIR}/bin/python -m pip install -U pip
+${INSTALL_DIR}/bin/python -m pip install -U git+https://github.com/nkomiya/create-github-project@v0.2.0
+```
+
+#### コマンドの設定
+
+1. 環境変数 PATH に含まれるディレクトリに Symbolic link を作成
 
     ```bash
-    ${INSTALL_DIR}/bin/python -m pip install -U pip
-    ${INSTALL_DIR}/bin/python -m pip install -U git+https://github.com/nkomiya/create-github-project@v0.3.0
+    ln -s ${INSTALL_DIR}/bin/create-github-project <Symbolic link 作成先>
     ```
 
-- エイリアスと補完
+1. 補完の有効化
 
-    ```bash
-    alias create-github-project="${INSTALL_DIR}/bin/create-github-project"
+    - **bash** : ~/.bashrc に下記を追記
 
-    # 補完 (bash shell)
-    eval "$(
-        LC_ALL='en_US.UTF8' _CREATE_GITHUB_PROJECT_COMPLETE=bash_source create-github-project |
-        sed -e "s|\$1|${INSTALL_DIR}/bin/create-github-project|"
-    )"
-    ```
+        ```bash
+        eval "$(LC_MESSAGES='en_US.UTF-8' _CREATE_GITHUB_PROJECT_COMPLETE=bash_source create-github-project)"
+        ```
+
+    - **zsh** : ~/.zshrc に下記を追記
+
+        ```shell
+        # 「command not found: compdef」のエラーが出る場合は、下記の設定も必要
+        # autoload -Uz compinit
+        # compinit
+
+        eval "$(_CREATE_GITHUB_PROJECT_COMPLETE=zsh_source create-github-project)"
+        ```
+
+    - **fish** : ~/.config/fish/completions/create-github-project.fish に下記を追記
+
+        ```shell
+        eval (env _CREATE_GITHUB_PROJECT_COMPLETE=fish_source create-github-project)
+        ```
 
 ## 使用方法
 
