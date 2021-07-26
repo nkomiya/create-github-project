@@ -23,7 +23,7 @@ jobs:
       - name: set version
         id: set_version
         run: |
-          echo "::set-output name=version::$(jq -r .version package.json)"
+          echo "::set-output name=version::$(jq -r .version release/package.json)"
 
       - name: set release body
         run: |
