@@ -51,10 +51,10 @@ jobs:
             ## 変更点
             ${{ env.BODY }}
           labels: automated pr
-          base: master
           branch: release-v${{ steps.set_version.outputs.version }}
+{%- endraw %}
+          base: {{ production_branch }}
           delete-branch: true
-{%- endraw -%}
 {%- if release_review %}
           reviewers: "{{ ','.join(release_review.keys()) }}"
 {% else %}
