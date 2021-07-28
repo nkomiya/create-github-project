@@ -36,7 +36,7 @@ class ResourceManager:
         '*',
         'release/*',
         '.github/*',
-        '.github/issue_template/*',
+        '.github/ISSUE_TEMPLATE/*',
         '.github/workflows/do-release*',
     ]
     #: GitHub workflow
