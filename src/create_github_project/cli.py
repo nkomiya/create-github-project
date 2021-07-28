@@ -61,17 +61,17 @@ def init(repo_dir: Path, repo_name: str, production: str, lang: str, commit_type
     repo_name = repo_name or repo_dir.name
 
     # 本番用ブランチ
-    production = production or questionary.select('Production branch name?', choices=['master', 'main']).ask()
+    production = production or questionary.select('Production branch name?', choices=['master', 'main']).unsafe_ask()
     # commit type
     if types is None:
         choices = [
             questionary.Choice(type_, checked=type_ in ['feat', 'fix', 'docs', 'perf'])
             for type_ in SUPPORTED_COMMIT_TYPES
         ]
-        types = questionary.checkbox('Commit types to be included CHANGELOG?', choices=choices).ask()
+        types = questionary.checkbox('Commit types to be included CHANGELOG?', choices=choices).unsafe_ask()
     # 言語
     if languages is None:
-        languages = questionary.checkbox('Programming languages to be used?', choices=SUPPORTED_LANGUAGES).ask()
+        languages = questionary.checkbox('Programming languages to be used?', choices=SUPPORTED_LANGUAGES).unsafe_ask()
 
     # レビュアー
     code_review = parse_reviewer(code_review, 'code-review', 'Who should review code changes?')
@@ -139,7 +139,7 @@ def parse_reviewer(reviewers: str, key: str, question: str) -> Dict[str, Dict[st
     # レビュアーが未指定の場合
     if account_ids is None:
         # 選択可能なアカウントが存在する場合にのみ、prompt で確認を促す。
-        account_ids = questionary.checkbox(question, choices=availabe_account).ask() if availabe_account else []
+        account_ids = questionary.checkbox(question, choices=availabe_account).unsafe_ask() if availabe_account else []
 
     # 付帯情報を付与した辞書として返す
     return {aid: accounts.get_account_info(aid) for aid in account_ids}
