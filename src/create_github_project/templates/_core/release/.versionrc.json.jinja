@@ -1,0 +1,61 @@
+{
+    "header": "# Changelog\n\nAll notable changes to this project will be documented in this file.",
+    "types": [
+        {
+            "type": "feat",
+            "section": "Features"
+            {%- if "feat" not in commit_types -%},
+            "hidden": true
+            {%- endif %}
+        },
+        {
+            "type": "fix",
+            "section": "Bug Fixes"
+            {%- if "fix" not in commit_types -%},
+            "hidden": true
+            {%- endif %}
+        },
+        {
+            "type": "test",
+            "section": "Tests"
+            {%- if "test" not in commit_types -%},
+            "hidden": true
+            {%- endif %}
+        },
+        {
+            "type": "docs",
+            "section": "Documentation"
+            {%- if "docs" not in commit_types -%},
+            "hidden": true
+            {%- endif %}
+        },
+        {
+            "type": "style",
+            "section": "Styles"
+            {%- if "style" not in commit_types -%},
+            "hidden": true
+            {%- endif %}
+        },
+        {
+            "type": "refactor",
+            "section": "Refactor"
+            {%- if "refactor" not in commit_types -%},
+            "hidden": true
+            {%- endif %}
+        },
+        {
+            "type": "perf",
+            "section": "Performance"
+            {%- if "perf" not in commit_types -%},
+            "hidden": true
+            {%- endif %}
+        },
+        {
+            "type": "chore",
+            "section": "Chore"
+            {%- if "chore" not in commit_types -%},
+            "hidden": true
+            {%- endif %}
+        }
+    ]
+}
