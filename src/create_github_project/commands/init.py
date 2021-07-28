@@ -1,33 +1,20 @@
 import os
 from pathlib import Path
-import pip
 from typing import Dict, List, Union
 
 import click
-from github import Github
 import questionary
 
-from create_github_project import __version__ as VERSION
 from create_github_project.resource_manager import ResourceManager
-from create_github_project.accounts import Accounts
-
-# GitHub リポジトリに関する情報
-REPOSITORY = 'nkomiya/create-github-project'
 
 
+#: プロダクションブランチとして許容する名前
 PRODUCTION_BRANCHES = ['master', 'main']
 SUPPORTED_COMMIT_TYPES = ResourceManager.get_commit_types()
 SUPPORTED_LANGUAGES = ResourceManager.get_supported_language()
 
 
-@click.group(help='Command line tool to create templated Git project.')
-def cmd() -> None:
-    """CLI のエントリーポイント。
-    """
-    pass
-
-
-@cmd.command(help="Initialize local Git repository.")
+@click.command(help="Initialize local Git repository.")
 @click.argument('repo_dir', type=click.Path(exists=False, path_type=Path))
 @click.option('--repo-name', type=str, default='',
               help='GitHub repository name. Default is directory name of `REPO_DIR`.')
@@ -143,81 +130,3 @@ def parse_reviewer(reviewers: str, key: str, question: str) -> Dict[str, Dict[st
 
     # 付帯情報を付与した辞書として返す
     return {aid: accounts.get_account_info(aid) for aid in account_ids}
-
-
-@cmd.group(help='Manage GitHub account to set reviewers.')
-def account() -> None:
-    pass
-
-
-@account.command(name='list', help='List GitHub account under managements.')
-def _list() -> None:
-    """管理下にある GitHub アカウントの一覧を出力する。
-    """
-    Accounts().dump_list()
-
-
-@account.command(help='Add GitHub account under managements.')
-@click.argument('account_id', type=str)
-@click.option('--display-name', type=str, help='Display name for this user.', required=True)
-def add(account_id: str, display_name: str) -> None:
-    """GitHub アカウントをツールの管理下に登録する。
-
-    Args:
-        account_id (str): GitHub アカウント ID
-        display_name (str): 表示名
-
-    Raises:
-        click.BadParameter: 対象アカウントが存在しない場合
-    """
-    accounts = Accounts()
-
-    # 対象アカウントが管理下にある場合は何もしない。
-    if accounts.exists(account_id):
-        print(f"GitHub Account '{account_id}' already under management.")
-        return
-
-    homepage = accounts.add(account_id, display_name)
-    if homepage is None:
-        raise click.BadParameter(f"Account '{account_id}' not exist.")
-
-    # メッセージ
-    print('\n'.join([
-        'Following GitHub account added under management.\n',
-        f'  - account ID   : {account_id}',
-        f'  - Display name : {display_name}',
-        f'  - homepage     : {homepage}'
-    ]))
-
-
-@account.command(help='Drop GitHub account under managements.')
-@click.argument('account_id', type=str)
-def drop(account_id: str) -> None:
-    """ツール管理下にある GitHub アカウントを管理から外す。
-
-    Args:
-        account_id (str): GitHub アカウント ID
-    """
-    accounts = Accounts()
-    if not accounts.exists(account_id):
-        raise click.BadParameter(f"Account '{account_id}' is not under management.")
-    accounts.drop(account_id)
-
-
-@cmd.command(help='Update version if available newer versions exist.')
-def update() -> None:
-    """新規リリースがある場合に package の更新を行う。
-    """
-    repo = Github().get_repo(REPOSITORY)
-    latest = list(repo.get_releases())[0]
-    if latest.tag_name.endswith(VERSION):
-        print('Up to date.')
-        return
-    pip.main(['install', f'git+https://github.com/{REPOSITORY}@{latest.tag_name}'])
-
-
-@cmd.command(help='Desplay version.')
-def version() -> None:
-    """パッケージのバージョンを表示する。
-    """
-    print(f'create-github-project version: {VERSION}')
