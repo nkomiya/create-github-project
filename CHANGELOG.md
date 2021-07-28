@@ -1,6 +1,13 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+### [0.3.2](https://github.com/nkomiya/create-github-project/compare/v0.3.1...v0.3.2) (2021-07-28)
+
+
+### Bug Fixes
+
+* process not aborted on press ctrl-c ([#80](https://github.com/nkomiya/create-github-project/issues/80)) ([0ddce86](https://github.com/nkomiya/create-github-project/commit/0ddce86c8de0faf3eeb66fdf203d4a029a68003a))
+
 ### [0.3.1](https://github.com/nkomiya/create-github-project/compare/v0.3.0...v0.3.1) (2021-07-28)
 
 
