@@ -86,19 +86,19 @@ create-github-project init --help
 - 追加
 
     ```bash
-    create-github-project account add nkomiya --display-name nkomiya
+    create-github-project accounts add nkomiya --display-name nkomiya
     ```
 
 - 一覧表示
 
     ```bash
-    create-github-project account list
+    create-github-project accounts list
     ```
 
 - 削除
 
     ```bash
-    create-github-project account drop nkomiya
+    create-github-project accounts drop nkomiya
     ```
 
 ### ツールのバージョン管理
@@ -108,11 +108,11 @@ create-github-project init --help
 最新版のリリースが GitHub 上に存在する場合、下記コマンドによりアップデートが可能。
 
 ```bash
-create-github-project update
+create-github-project versions update
 ```
 
 #### 現行のバージョン確認
 
 ```bash
-create-github-project version
+create-github-project versions current
 ```
