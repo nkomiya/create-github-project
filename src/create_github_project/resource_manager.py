@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Dict, List
 
 import git
-from jinja2 import Template, Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader
 
 
 class ResourceManager:
@@ -15,6 +15,9 @@ class ResourceManager:
         repo_name (str): リポジトリ名
         production (str): 本番用ブランチの名前
         commit_types (List[str]): changelog に含める commit type
+        languages (List[str]): 利用するプログラミング言語
+        code_review (Dict[str, Dict[str, str]]): ソースコード レビュアー
+        release_review (Dict[str, Dict[str, str]]): リリース レビュアー
 
     Attributes:
         repo_dir (str): ローカルリポジトリのパス
@@ -116,10 +119,11 @@ class ResourceManager:
     def add_to_index(self, repo: git.Repo, src_root: str) -> None:
         """テンプレートファイルを index に登録する。
 
-        本メソッドでのファイル複製処理の挙動は下記の通り。
+        本メソッドでは、src_root で指定されるディレクトリ配下に存在するファイルを、
+        ディレクトリ構造を保ったまま、ローカルリポジトリに配置する。
 
-            * 複製元ファイルパス ： (src_root で指定されるディレクトリ)/(targets の要素が指定するパス)
-            * 複製先ファイルパス ： (targets の要素が指定するするパス)
+        配置するファイルの拡張子が .jinja である場合はテンプレートの置換処理を行い、
+        ファイル名が EXCLUDE で始まるファイルはリポジトリに配置しない。
 
         Args:
             repo (git.Repo): git repository
