@@ -21,6 +21,7 @@ jobs:
         id: set_version
         run: |
           npm run release:patch -- \
+            -i ../CHANGELOG.md \
             --commitUrlFormat="https://github.com/${GITHUB_REPOSITORY}/commit/{{hash}}" \
             --compareUrlFormat="https://github.com/${GITHUB_REPOSITORY}/compare/{{previousTag}}...{{currentTag}}"
           echo "::set-output name=version::$(jq -r .version package.json)"
@@ -37,7 +38,7 @@ jobs:
       - name: set pull request body
         run: |
           body=$(sed -e 's/^#\(#*\) \[/#\1 /' \
-                     -e '1,/^### ${{steps.set_version.outputs.version}}/d' \
+                     -e '1,/^### 0.3.1/d' \
                      -e '/^##* [0-9]/,$d' \
                      CHANGELOG.md)
           echo 'BODY<<EOF' >> $GITHUB_ENV

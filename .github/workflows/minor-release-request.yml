@@ -21,6 +21,7 @@ jobs:
         id: set_version
         run: |
           npm run release:minor -- \
+            -i ../CHANGELOG.md \
             --commitUrlFormat="https://github.com/${GITHUB_REPOSITORY}/commit/{{hash}}" \
             --compareUrlFormat="https://github.com/${GITHUB_REPOSITORY}/compare/{{previousTag}}...{{currentTag}}"
           echo "::set-output name=version::$(jq -r .version package.json)"
