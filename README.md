@@ -24,7 +24,7 @@ python -m venv ${INSTALL_DIR}
 
 ```bash
 ${INSTALL_DIR}/bin/python -m pip install -U pip
-${INSTALL_DIR}/bin/python -m pip install -U git+https://github.com/nkomiya/create-github-project@v0.2.0
+${INSTALL_DIR}/bin/python -m pip install -U git+https://github.com/nkomiya/create-github-project@v0.3.1
 ```
 
 #### コマンドの設定
