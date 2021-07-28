@@ -1,1 +1,1 @@
-recursive-include src/create_github_project/resource_manager/resources *
+recursive-include src/create_github_project/templates *
