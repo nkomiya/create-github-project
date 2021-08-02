@@ -13,6 +13,28 @@
 
 #### ci.yaml
 
+<!-- TODO: CI用 trigger を作成する。下記コマンドを参照。
+
+1. 変数設定
+
+PROJECT=<Cloud Build trigger を作成する GCP プロジェクト>
+TRIGGER_NAME=<Cloud Build trigger の名前>
+DESCRIPTION=<Cloud Build trigger の説明文>
+REPO_OWNER=<GitHub リポジトリのオーナー>
+REPO_NAME=<GitHub リポジトリの名前>
+
+2. trigger 作成
+
+gcloud beta builds triggers create github \
+    --project "${PROJECT}" \
+    --name "${TRIGGER_NAME}" \
+    --description "${DESCRIPTION}" \
+    --repo-owner "${REPO_OWNER}" \
+    --repo-name "${REPO_NAME}" \
+    --pull-request-pattern '^(main|develop)$' \
+    --build-config 'cloudbuild/ci.yaml'
+-->
+
 この Build 構成ファイルでは、Cloud Build 上で実行する自動テストを定義する。
 
 本ファイルによる Build は、GitHub 上にて下記ブランチへのプルリクエストが作成された際に起動する。
@@ -22,6 +44,50 @@
 
 #### cd.yaml
 
+<!-- TODO: CD用 trigger を作成する。下記コマンドを参照。
+
+1. 変数設定
+
+PROJECT=<Cloud Build trigger を作成する GCP プロジェクト>
+TRIGGER_NAME=<Cloud Build trigger の名前>
+DESCRIPTION=<Cloud Build trigger の説明文>
+REPO_OWNER=<GitHub リポジトリのオーナー>
+REPO_NAME=<GitHub リポジトリの名前>
+
+2. dev 環境用 trigger 作成
+
+gcloud beta builds triggers create github \
+    --project "${PROJECT}" \
+    --name "${TRIGGER_NAME}" \
+    --description "${DESCRIPTION}" \
+    --repo-owner "${REPO_OWNER}" \
+    --repo-name "${REPO_NAME}" \
+    --branch-pattern '^develop$' \
+    --build-config 'cloudbuild/cd.yaml'
+
+3. stg 環境用 trigger 作成
+
+gcloud beta builds triggers create github \
+    --project "${PROJECT}" \
+    --name "${TRIGGER_NAME}" \
+    --description "${DESCRIPTION}" \
+    --repo-owner "${REPO_OWNER}" \
+    --repo-name "${REPO_NAME}" \
+    --branch-pattern '^{{ production_branch }}$' \
+    --build-config 'cloudbuild/cd.yaml'
+
+4. prd 環境用 trigger 作成
+
+gcloud beta builds triggers create github \
+    --project "${PROJECT}" \
+    --name "${TRIGGER_NAME}" \
+    --description "${DESCRIPTION}" \
+    --repo-owner "${REPO_OWNER}" \
+    --repo-name "${REPO_NAME}" \
+    --tag-pattern '^v\d+(\.\d+){2}$' \
+    --build-config 'cloudbuild/cd.yaml'
+-->
+
 この Build 構成ファイルでは、各 GCP 環境へのデプロイ処理の定義を行う。
 
 デプロイ先の GCP 環境、およびデプロイの契機は下記の表の通り。
@@ -30,4 +96,4 @@
 |:--|:--|
 |dev 環境|develop ブランチへの push|
 |stg 環境|{{ production_branch }} ブランチへの push|
-|prd 環境|タグ `v*` の push|
+|prd 環境|タグ `vX.Y.Z` の push|

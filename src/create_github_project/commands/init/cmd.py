@@ -65,6 +65,7 @@ def init(repo_dir: Path,
 
     # メッセージ
     print('\n'.join([
+        '',
         'Repository created to the following path:\n',
         f'  {os.path.abspath(repo_dir)}\n',
         'Suggested actions:',
@@ -73,4 +74,5 @@ def init(repo_dir: Path,
         '    git push origin develop',
         '    git push origin --all\n',
         '  - Activate GitHub workflows by visiting Actions tab.\n',
-    ]))
+        mp.get_follow_up(2, production, commit_types, reviewers, parameters)
+    ]).rstrip())
