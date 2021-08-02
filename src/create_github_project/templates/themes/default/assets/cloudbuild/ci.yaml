@@ -1,0 +1,9 @@
+# TODO: 実装
+steps:
+  - id: "run test"
+    name: alpine:3.14.0
+    entrypoint: ash
+    args:
+      - -c
+      - |-
+        echo 'running test'

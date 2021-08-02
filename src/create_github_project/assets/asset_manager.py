@@ -105,7 +105,7 @@ class AssetManager:
             # write file and add to index
             os.makedirs(output.parent, exist_ok=True)
             with open(output, 'w') as f:
-                f.write(data)
+                f.write(data.rstrip() + '\n')
 
             # add to index
             repo.index.add([output.relative_to(self._repo_dir).as_posix()])

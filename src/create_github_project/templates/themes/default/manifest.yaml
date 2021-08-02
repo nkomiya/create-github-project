@@ -11,6 +11,13 @@ inputs:
   - name: code_reviewers
     type: reviewers
     title: "Who should review code changes?"
+  # Cloud build
+  - name: cloudbuild
+    type: select
+    title: "Add Cloud Build template files?"
+    choices:
+      - "yes"
+      - "no"
 
 assets:
   - name: "@core"
@@ -21,5 +28,8 @@ assets:
   - name: "@languages/java"
     if: "{{ 'java' in inputs.languages }}"
     to: docs/setup
-  - name: "assets"
+  - name: "assets/core"
     to: "/"
+  - name: "assets/cloudbuild"
+    if: "{{ inputs.cloudbuild == 'yes' }}"
+    to: "cloudbuild"
