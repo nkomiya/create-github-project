@@ -1,6 +1,6 @@
 import click
 
-from create_github_project.accounts import Accounts
+from create_github_project.utils import Accounts
 
 
 @click.command(help='Add GitHub account under managements.')
