@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Dict, List
 
+from jinja2 import Template
 import yaml
 
 from .inputs_section import InputsSection
@@ -27,6 +28,7 @@ class ManifestParser:
         self._theme = self.THEMES.joinpath(theme)
         self._inputs = InputsSection(manifest['inputs'])
         self._assets = AssetsSection(manifest['assets'])
+        self._follow_ups = manifest['followUps']
 
     def get_parameter_names(self) -> List[str]:
         """manifest file で定義された、インプットパラメータ名の一覧を返す。
@@ -84,3 +86,36 @@ class ManifestParser:
                 assets.append(Asset(self._theme.joinpath(src_raw), dest))
 
         return assets
+
+    def get_follow_up(self,
+                      indent: int,
+                      production: str,
+                      commit_types: List[str],
+                      reviewers: List[str],
+                      inputs: Dict[str, object]) -> str:
+        """リポジトリ作成後に表示すべき、追加のメッセージを返す。
+
+        Args:
+            indent (int): インデント幅
+            production (str): 本番ブランチ
+            commit_types (List[str]): CHANGELOG に含める commit 型
+            reviewers (List[str]): リリースのレビュアー
+            inputs (Dict[str, object]): テーマ固有 パラメータ
+
+        Returns:
+            str: 追加のメッセージ
+        """
+        params = {
+            "production": production,
+            "commit_types": commit_types,
+            "reviewers": reviewers,
+            "inputs": inputs
+        }
+
+        msg = []
+        for f in self._follow_ups:
+            if Template(f['if']).render(**params) == 'True':
+                content = '\n'.join(' ' * indent + line for line in f['content'].split('\n'))
+                msg.append(content)
+
+        return '\n'.join(msg)

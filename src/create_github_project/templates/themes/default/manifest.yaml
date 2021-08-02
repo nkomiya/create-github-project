@@ -33,3 +33,14 @@ assets:
   - name: "assets/cloudbuild"
     if: "{{ inputs.cloudbuild == 'yes' }}"
     to: "cloudbuild"
+
+followUps:
+  - if: "{{ inputs.cloudbuild == 'yes' }}"
+    content: |-
+      - Configure Cloud Build triggers
+
+        1. Connect GitHub repository to GCP project. See the following link for detailed information.
+
+          https://cloud.google.com/build/docs/automating-builds/create-github-app-triggers#installaing_gcb_app
+
+        2. Set up Build triggers. See the commented out instruction in cloudbuild/README.md.
