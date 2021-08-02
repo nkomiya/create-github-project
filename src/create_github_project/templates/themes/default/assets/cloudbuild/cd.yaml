@@ -1,0 +1,8 @@
+# TODO: 実装
+steps:
+  - id: "deploy"
+    name: gcr.io/cloud-builders/gcloud
+    args:
+      - app
+      - deploy
+      - -h
