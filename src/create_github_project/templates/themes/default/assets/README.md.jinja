@@ -51,9 +51,9 @@
             - `${commit_message}` : PR が merge される際に利用されるべきコミットメッセージ
         - 補足
             - 本リポジトリでは、コミットメッセージの形式として [conventional commits](https://www.conventionalcommits.org/ja/) を採用する。
-    {%- if code_review %}
+    {%- if inputs.code_reviewers %}
         - レビュアー
-        {%- for account_id, info in code_review.items() %}
+        {%- for account_id, info in inputs.code_reviewers.items() %}
             - {{ account_id }} ({{ info['display_name'] }})
         {%- endfor -%}
     {%- else %}
@@ -71,9 +71,9 @@
 ステージング環境へのリリースの契機となる、{{ production_branch }} ブランチの更新方法は下記の通り。
 
 1. 作業者が develop ➔ {{ production_branch }} に PR を作成。
-{%- if release_review %}
+{%- if reviewers %}
     - レビュアー (自動指定)
-    {%- for account_id, info in release_review.items() %}
+    {%- for account_id, info in reviewers.items() %}
         - {{ account_id }} ({{ info['display_name'] }})
     {%- endfor -%}
 {%- else %}
@@ -100,9 +100,9 @@
 
     - ブランチ ： {{ production_branch }}
 1. 作業者は PR が作成されたことを確認した後、リリースのレビューを依頼する。
-{%- if release_review %}
+{%- if reviewers %}
     - レビュアー (自動指定)
-    {%- for account_id, info in release_review.items() %}
+    {%- for account_id, info in reviewers.items() %}
         - {{ account_id }} ({{ info['display_name'] }})
     {%- endfor -%}
 {%- else %}
@@ -136,13 +136,13 @@
 
     ![format_on_save](https://user-images.githubusercontent.com/49669363/126272780-d67648fe-1e72-42aa-939b-16d1dc6e197f.png)
 
-{% if languages -%}
-1. 下記リンク先のドキュメントに従い、言語ごとの設定を行う。
+{%- if inputs.languages %}
 
-    {% for lang in languages -%}
+1. 下記リンク先のドキュメントに従い、言語ごとの設定を行う。
+{% for lang in inputs.languages %}
     - [{{ lang.capitalize() }}](./docs/setup/{{ lang }}.md)
-    {% endfor %}
-{% endif -%}
+{%- endfor %}
+{%- endif %}
 
 ## ディレクトリ構成
 

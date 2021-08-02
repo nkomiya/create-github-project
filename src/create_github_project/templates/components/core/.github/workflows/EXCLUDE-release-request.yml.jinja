@@ -55,7 +55,7 @@ jobs:
 {%- endraw %}
           base: {{ production_branch }}
           delete-branch: true
-{%- if release_review %}
-          reviewers: "{{ ','.join(release_review.keys()) }}"
+{%- if reviewers %}
+          reviewers: "{{ ','.join(reviewers.keys()) }}"
 {% else %}
 {% endif %}

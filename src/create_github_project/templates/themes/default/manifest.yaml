@@ -1,0 +1,25 @@
+inputs:
+  # languages
+  - name: languages
+    type: checkbox
+    title: "Programming languages to be used?"
+    choices:
+      - java
+      - python
+    default: []
+  # code reviewers
+  - name: code_reviewers
+    type: reviewers
+    title: "Who should review code changes?"
+
+assets:
+  - name: "@core"
+    to: "/"
+  - name: "@languages/python"
+    if: "{{ 'python' in inputs.languages }}"
+    to: docs/setup
+  - name: "@languages/java"
+    if: "{{ 'java' in inputs.languages }}"
+    to: docs/setup
+  - name: "assets"
+    to: "/"
