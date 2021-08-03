@@ -34,7 +34,9 @@ def get_languages() -> List[str]:
     return lang
 
 
-def to_remote_urls(type_: str, name: Union[str, None]) -> Tuple[bool, Union[str, None], Union[Dict[str, str], None]]:
+def to_remote_urls(type_: str, name: Union[str, None]) -> Tuple[Union[str, None],
+                                                                Union[Dict[str, str], None],
+                                                                Union[None, str]]:
     """リモートリポジトリの URL 郡を作成する。
 
     リポジトリ名が与えられていない場合、リポジトリの種別が GitHub でない場合は、
@@ -45,11 +47,11 @@ def to_remote_urls(type_: str, name: Union[str, None]) -> Tuple[bool, Union[str,
         name (Union[str, None]): リモートリポジトリの名前
 
     Returns:
-        Tuple[Union[str, None], Union[Dict[str, str], None]]: 下記 URL 郡
+        Tuple[Union[str, None], Union[Dict[str, str], None], Union[None, str]]: 下記 URL 郡
 
-            * URL 作成処理の可否
             * リモートリポジトリ トップページへの URL, リポジトリ名が不正な場合は None
             * CHANGELOG に埋め込む URL, リポジトリ名が不正な場合は None
+            * URL 作成時に発生したエラー, 正常時は None
 
     Raises:
         ValueError: リポジトリ種別が不正な場合
@@ -59,22 +61,23 @@ def to_remote_urls(type_: str, name: Union[str, None]) -> Tuple[bool, Union[str,
             name = '${GITHUB_REPOSITORY}'
         else:
             name = questionary.text('Remote repository name?').unsafe_ask()
-    else:
+
+    if name != '${GITHUB_REPOSITORY}':
         tmp = name.split('/')
         if len(tmp) != 2:
-            return False, None, None
+            return None, None, f'Invalid repository name `{name}`'
 
     if type_ == 'github':
         base = f'https://github.com/{name}'
-        return True, base, {
+        return base, {
             'commitUrlFormat': base + '/commit/{{hash}}',
             'compareUrlFormat': base + '/compare/{{previousTag}}...{{currentTag}}'
-        }
+        }, None
     elif type_ == 'gsr':
         base = f'https://source.cloud.google.com/{name}'
-        return True, base, {
+        return base, {
             'commitUrlFormat': base + '/+/{{hash}}',
-            'compareUrlFormat': base + '/+/refs/tags/{{previousTag}}...{{currentTag}}'
-        }
+            'compareUrlFormat': base + '/+/refs/tags/{{currentTag}}...refs/tags/{{previousTag}}'
+        }, None
 
     raise ValueError(f'Unsupported repository type `{type_}`.')
