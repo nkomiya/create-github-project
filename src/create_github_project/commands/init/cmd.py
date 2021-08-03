@@ -52,10 +52,9 @@ def init(repo_dir: Path,
     repo_name = repo_name or repo_dir.name
 
     # CHANGELOG に埋め込む URL 郡を作成する。
-    ok, remote_url, urls = utility_fn.to_remote_urls(remote_type, remote_repo_name)
-    if not ok:
-        raise click.BadParameter(
-            f'Invalid remote repository name `{remote_repo_name}`', param_hint='--remote-repo-name')
+    remote_url, urls, err = utility_fn.to_remote_urls(remote_type, remote_repo_name)
+    if err:
+        raise click.BadParameter(err, param_hint='--remote-repo-name')
 
     # マニフェストファイル
     mp = ManifestParser('default')
