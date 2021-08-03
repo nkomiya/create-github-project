@@ -21,11 +21,9 @@ jobs:
         id: set_version
         run: |
           yarn run release:{{ release_stage }} -- \
-{%- raw %}
-            --commitUrlFormat="https://github.com/${GITHUB_REPOSITORY}/commit/{{hash}}" \
-            --compareUrlFormat="https://github.com/${GITHUB_REPOSITORY}/compare/{{previousTag}}...{{currentTag}}"
+            --commitUrlFormat="{{ changelog_urls.commitUrlFormat }}" \
+            --compareUrlFormat="{{ changelog_urls.compareUrlFormat }}"
           echo "::set-output name=version::$(jq -r .version package.json)"
-{%- endraw %}
         working-directory: ./release
 
       - name: set pull request body

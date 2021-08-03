@@ -13,9 +13,10 @@ class AssetManager:
 
     Args:
         repo_dir (Path): リポジトリ作成先のパス
+        urls (Dict[str, str]): CHANGELOG に利用する URL 郡
         repo_name (str): リポジトリ名
         production (str): 本番用ブランチの名前
-        commit_types (List[str]): changelog に含める commit type
+        commit_types (List[str]): CHANGELOG に含める commit type
         reviewers (Dict[str, Dict[str, str]]): リリース時のレビュアー
         parameters (Dict[str, object]): その他 template 用パラメータ
     """
@@ -27,6 +28,7 @@ class AssetManager:
 
     def __init__(self,
                  repo_dir: Path,
+                 urls: Dict[str, str],
                  repo_name: str,
                  production: str,
                  commit_types: List[str],
@@ -38,6 +40,7 @@ class AssetManager:
         # テンプレートのパラメータ
         self._template_parameter = {
             'repo_name': repo_name,
+            'changelog_urls': urls,
             'production_branch': production,
             'commit_types': commit_types,
             'reviewers': reviewers,
