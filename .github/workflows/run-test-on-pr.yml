@@ -1,0 +1,25 @@
+name: run-test-on-pr
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: set up python
+        run: |
+          pip install .
+          pip install -r tests/test_requirements.txt
+
+      - name: run test
+        run: |
+          pytest tests --cov src --cov-branch
