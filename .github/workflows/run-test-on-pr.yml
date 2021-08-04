@@ -22,4 +22,4 @@ jobs:
 
       - name: run test
         run: |
-          pytest tests --cov src --cov-branch
+          pytest --cov=./src/create_github_project --cov-branch tests
