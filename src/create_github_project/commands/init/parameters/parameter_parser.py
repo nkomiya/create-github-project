@@ -1,4 +1,4 @@
-from typing import Dict, Union
+from typing import Dict, List, Union
 
 from .checkbox import CheckBox
 from .enums import ParameterType
@@ -21,7 +21,7 @@ class ParameterParser:
         production (Union[str, None]): 本番用ブランチ
         commit_types (Union[str, None]): CHANGELOG に含める commit 型
         reviewers (Union[str, None]): リリース時のレビュアー
-        config (Dict[str, object]): テーマ固有のパラメータ構成
+        config (List[Dict[str, object]]): テーマ固有のパラメータ構成
         params (Dict[str, object]): テーマ固有のパラメータ値
     """
 
@@ -29,7 +29,7 @@ class ParameterParser:
                  production: Union[str, None],
                  commit_types: Union[str, None],
                  reviewers: Union[str, None],
-                 config: Dict[str, object],
+                 config: List[Dict[str, object]],
                  params: Dict[str, object]):
         self._production = Select(production, 'Production branch name?', PRODUCTION_BRANCHES)
         self._commit_types = CheckBox(commit_types,
