@@ -58,11 +58,10 @@ def init(repo_dir: Path,
 
     # マニフェストファイル
     mp = ManifestParser('default')
-    mp.get_input_config()
     unknown = set(parameters.keys()) - set(mp.get_parameter_names())
     if unknown:
         raise click.BadParameter('Unknown parameter detected: ' + ', '.join(map(lambda x: f"'{x}'", unknown)),
-                                 param_hint="'--param'")
+                                 param_hint="'--parameter'")
 
     # インプットパラメータ
     pp = ParameterParser(production, commit_types, reviewers, mp.get_input_config(), parameters)
