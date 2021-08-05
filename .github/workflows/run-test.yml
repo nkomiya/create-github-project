@@ -1,4 +1,4 @@
-name: run-test-on-pr
+name: test
 
 on:
   pull_request:
@@ -9,8 +9,13 @@ on:
       - synchronize
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
+  run-test:
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      max-parallel: 10
+      matrix:
+        platform: [ubuntu-latest, macos-latest]
+        python-version: [3.7, 3.8, 3.9]
 
     steps:
       - uses: actions/checkout@v2
