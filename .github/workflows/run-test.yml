@@ -20,7 +20,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: set up python
+      - name: set up python runtime
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: set up python configuration
         run: |
           pip install .
           pip install -r tests/test_requirements.txt
