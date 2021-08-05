@@ -1,5 +1,7 @@
 # GitHub プロジェクト 雛形作成ツール
 
+[![test](https://github.com/nkomiya/create-github-project/actions/workflows/run-test.yml/badge.svg)](https://github.com/nkomiya/create-github-project/actions/workflows/run-test.yml)
+
 ## 前提条件
 
 - Python 3.7 以降がインストールされていること
