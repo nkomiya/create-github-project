@@ -1,0 +1,16 @@
+[run]
+parallel = True
+branch = True
+source =
+    create_github_project
+omit =
+    */__main__.py
+
+[paths]
+source =
+    src/create_github_project
+    .tox/*/lib/python*/site-packages/create_github_project
+
+
+[report]
+show_missing = True
