@@ -1,3 +1,4 @@
+from datetime import datetime
 from io import StringIO
 import json
 from pathlib import Path
@@ -19,7 +20,9 @@ class TestAccountsClass:
     @pytest.fixture(autouse=True)
     def filepath(self, tmpdir: LocalPath):
         old_path = Accounts.FILE_PATH
-        Accounts.FILE_PATH = Path(tmpdir.strpath).joinpath('accounts.json')
+        now = str(datetime.now().timestamp())
+        tmpdir.mkdir(now)
+        Accounts.FILE_PATH = Path(tmpdir.strpath).joinpath(now).joinpath('accounts.json')
         yield
         Accounts.FILE_PATH = old_path
 

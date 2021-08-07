@@ -1,0 +1,32 @@
+name: coverage-report
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  coverage-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: set up python runtime
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+
+      - name: set up python configuration
+        run: |
+          pip install -U pip
+          pip install tox
+
+      - name: retest
+        run: |
+          tox -e py39
+
+      - name: coverage report
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
