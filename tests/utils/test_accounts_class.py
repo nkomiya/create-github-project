@@ -5,8 +5,10 @@ from pathlib import Path
 from py._path.local import LocalPath
 from typing import Dict, List, Union
 
+from github import Github, NamedUser
 import pytest
 from pytest import CaptureFixture
+from pytest_mock import MockerFixture
 import yaml
 
 from create_github_project.utils import Accounts
@@ -136,27 +138,36 @@ class TestAccountsClass:
                 {},
                 'github', 'GitHub', 'https://github.com/github'
             ],
-            [
-                {
-                    'github': {
-                        'display_name': 'GitHub',
-                        'homepage': 'https://github.com/github'
-                    },
-                },
-                'github', 'GitHub', None,
-            ],
-            # user が存在しない場合 (GitHub のユーザ名は39文字が上限)
-            [
-                {},
-                'a'*50, 'User Not Exist', None
-            ],
         ]
     )
-    def test_add(self, accounts: Dict[str, Dict[str, str]], account_id: str, display_name: str,
-                 expect_homepage: Union[str, None]) -> None:
+    def test_add_ok(self, mocker: MockerFixture,
+                    accounts: Dict[str, Dict[str, str]], account_id: str, display_name: str,
+                    expect_homepage: Union[str, None]) -> None:
         self.create_config_file(accounts)
+
+        # dummy github user object
+        user = mocker.Mock(spec=NamedUser)
+        user.html_url = expect_homepage
+        # mocked github object
+        get_user = mocker.patch.object(Github, 'get_user', return_value=user)
+
+        # execute
         homepage = Accounts().add(account_id, display_name)
+
+        get_user.assert_called_once_with(account_id)
         assert expect_homepage == homepage
+
+    def test_add_fail(self, mocker: MockerFixture) -> None:
+        self.create_config_file({})
+
+        # mocked github object
+        get_user = mocker.patch.object(Github, 'get_user', side_effect=Exception)
+
+        # execute
+        homepage = Accounts().add(self.USER1, 'USER1')
+
+        get_user.assert_called_once_with(self.USER1)
+        assert homepage is None
 
     def test_drop_ok(self) -> None:
         self.create_config_file({
