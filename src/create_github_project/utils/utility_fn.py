@@ -29,8 +29,9 @@ def get_languages() -> List[str]:
     """
     lang = []
     for name in os.listdir(LANGUAGES):
-        if os.path.isdir(os.path.join(LANGUAGES, name)):
-            lang.append(name)
+        if not os.path.isdir(os.path.join(LANGUAGES, name)):
+            continue  # pragma: no cover
+        lang.append(name)
     return lang
 
 
@@ -56,17 +57,25 @@ def to_remote_urls(type_: str, name: Union[str, None]) -> Tuple[Union[str, None]
     Raises:
         ValueError: リポジトリ種別が不正な場合
     """
+    if type_ not in ('github', 'gsr'):
+        raise ValueError(f'Unsupported repository type `{type_}`.')
+
+    # fill branch name
     if name is None:
         if type_ == 'github':
             name = '${GITHUB_REPOSITORY}'
-        else:
+        elif type_ in ('gsr'):
             name = questionary.text('Remote repository name?').unsafe_ask()
+        else:
+            raise NotImplementedError(f'Unsupported repository type `{type_}`.')  # pragma: no cover
 
+    # validate branch name
     if name != '${GITHUB_REPOSITORY}':
         tmp = name.split('/')
         if len(tmp) != 2:
             return None, None, f'Invalid repository name `{name}`'
 
+    # generate links
     if type_ == 'github':
         base = f'https://github.com/{name}'
         return base, {
@@ -79,5 +88,5 @@ def to_remote_urls(type_: str, name: Union[str, None]) -> Tuple[Union[str, None]
             'commitUrlFormat': base + '/+/{{hash}}',
             'compareUrlFormat': base + '/+/refs/tags/{{currentTag}}...refs/tags/{{previousTag}}'
         }, None
-
-    raise ValueError(f'Unsupported repository type `{type_}`.')
+    else:
+        raise NotImplementedError(f'Unsupported repository type `{type_}`.')  # pragma: no cover
