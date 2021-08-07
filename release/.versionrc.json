@@ -10,11 +10,15 @@
       "section": "Bug Fixes"
     },
     {
-      "type": "test",
-      "hidden": "Tests"
+      "type": "perf",
+      "section": "Performance"
     },
     {
       "type": "docs",
+      "section": "Documentation"
+    },
+    {
+      "type": "test",
       "hidden": true
     },
     {
@@ -23,10 +27,6 @@
     },
     {
       "type": "refactor",
-      "hidden": true
-    },
-    {
-      "type": "perf",
       "hidden": true
     },
     {
