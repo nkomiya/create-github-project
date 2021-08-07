@@ -58,5 +58,7 @@ jobs:
           pip install tox
 
       - name: retest and report
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: |
           tox -e py39-codecov
