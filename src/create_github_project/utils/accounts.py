@@ -66,12 +66,15 @@ class Accounts:
         """
         # 既に登録されている場合
         if account_id in self._accounts.keys():
+            print(self._accounts.keys())
             return None
 
         # アカウント存在確認
         try:
             user = Github().get_user(account_id)
         except Exception:
+            import traceback
+            print(traceback.format_exc())
             return None
 
         # 情報更新
