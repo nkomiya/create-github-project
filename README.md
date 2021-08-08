@@ -1,6 +1,6 @@
 # GitHub プロジェクト 雛形作成ツール
 
-[![test](https://github.com/nkomiya/create-github-project/actions/workflows/run-test.yml/badge.svg)](https://github.com/nkomiya/create-github-project/actions/workflows/run-test.yml)
+[![test](https://github.com/nkomiya/create-github-project/actions/workflows/run-test.yml/badge.svg)](https://github.com/nkomiya/create-github-project/actions/workflows/run-test.yml) [![codecov](https://codecov.io/gh/nkomiya/create-github-project/branch/main/graph/badge.svg?token=781EL8JX7A)](https://codecov.io/gh/nkomiya/create-github-project)
 
 ## 前提条件
 
