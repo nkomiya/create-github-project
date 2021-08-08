@@ -22,8 +22,13 @@ class ParameterType(Enum):
 
         Returns:
             ParameterType: 列挙子
+
+        Raises:
+            NotImplementedError: 不正なパラメータ型が指定された場合
         """
         for e in cls:
             if e.name.lower() == name:
                 return e
-        return None
+
+        # NOTE: 現状 template は完全に package 管理下にあるため、不正な parameter 型の検証は不要
+        raise NotImplementedError(f'Parameter type `{name}` is not supported.')

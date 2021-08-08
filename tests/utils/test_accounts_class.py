@@ -3,8 +3,9 @@ import json
 from pathlib import Path
 from py._path.local import LocalPath
 from typing import Dict, List, Union
+from unittest.mock import MagicMock
 
-from github import Github, NamedUser
+from github import NamedUser
 import pytest
 from pytest import CaptureFixture
 from pytest_mock import MockerFixture
@@ -129,41 +130,55 @@ class TestAccountsClass:
             assert output == ""
 
     @pytest.mark.parametrize(
-        ['accounts', 'account_id', 'display_name', 'expect_homepage'],
+        ['accounts', 'account_id', 'display_name', 'has_call', 'expect_homepage'],
         [
             [
                 {},
-                'github', 'GitHub', 'https://github.com/github'
+                'github', 'GitHub',
+                True, 'https://github.com/github'
+            ],
+            [
+                {
+                    'github': {
+                        'display_name': 'GitHub',
+                        'homepage': 'https://github.com/github'
+                    },
+                },
+                'github', 'GitHub',
+                False, None,
             ],
         ]
     )
-    def test_add_ok(self, mocker: MockerFixture,
+    def test_add_ok(self, mocker: MockerFixture, github_get_user: MagicMock,
                     accounts: Dict[str, Dict[str, str]], account_id: str, display_name: str,
-                    expect_homepage: Union[str, None]) -> None:
+                    has_call: bool, expect_homepage: Union[str, None]) -> None:
         self.create_config_file(accounts)
 
         # dummy github user object
         user = mocker.Mock(spec=NamedUser)
         user.html_url = expect_homepage
         # mocked github object
-        get_user = mocker.patch.object(Github, 'get_user', return_value=user)
+        github_get_user.return_value = user
 
         # execute
         homepage = Accounts().add(account_id, display_name)
 
-        get_user.assert_called_once_with(account_id)
+        if has_call:
+            github_get_user.assert_called_once_with(account_id)
+        else:
+            github_get_user.assert_not_called()
         assert expect_homepage == homepage
 
-    def test_add_fail(self, mocker: MockerFixture) -> None:
+    def test_add_fail(self, mocker: MockerFixture, github_get_user) -> None:
         self.create_config_file({})
 
         # mocked github object
-        get_user = mocker.patch.object(Github, 'get_user', side_effect=Exception)
+        github_get_user.side_effect = Exception
 
         # execute
         homepage = Accounts().add(self.USER1, 'USER1')
 
-        get_user.assert_called_once_with(self.USER1)
+        github_get_user.assert_called_once_with(self.USER1)
         assert homepage is None
 
     def test_drop_ok(self) -> None:
