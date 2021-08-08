@@ -12,9 +12,11 @@ jobs:
   run-test:
     runs-on: ${{ matrix.platform }}
     strategy:
-      max-parallel: 10
+      max-parallel: 6
       matrix:
-        platform: [ubuntu-latest, macos-latest, windows-latest]
+        # GitPythonがwindowsをsupportしたタイミングでテスト対象に移す
+        # platform: [ubuntu-latest, macos-latest, windows-latest]
+        platform: [ubuntu-latest, macos-latest]
         params:
           - py_ver: "3.7"
             tox_env: "py37"
