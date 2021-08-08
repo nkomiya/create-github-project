@@ -1,5 +1,5 @@
 {
-  "version": "0.3.2",
+  "version": "0.4.0",
   "scripts": {
     "release:minor": "standard-version --release-as minor",
     "release:patch": "standard-version --release-as patch",

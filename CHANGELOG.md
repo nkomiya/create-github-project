@@ -1,6 +1,20 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [0.4.0](https://github.com/nkomiya/create-github-project/compare/v0.3.2...v0.4.0) (2021-08-08)
+
+
+### Features
+
+* add cloud build template files ([#94](https://github.com/nkomiya/create-github-project/issues/94)) ([2f4f9bc](https://github.com/nkomiya/create-github-project/commit/2f4f9bc1e764bebef71174be85eb68313ff7816e))
+* add follow up message for cloud build ([#95](https://github.com/nkomiya/create-github-project/issues/95)) ([d125408](https://github.com/nkomiya/create-github-project/commit/d12540876c871f40889e3863195d6b4483629eb8))
+* add link style support for google source repository ([#96](https://github.com/nkomiya/create-github-project/issues/96)) ([adf72c2](https://github.com/nkomiya/create-github-project/commit/adf72c20c46d47c5b8b6887004d7cbd7242bdbef))
+
+
+### Bug Fixes
+
+* `init` command fail on selecting reviewers ([#91](https://github.com/nkomiya/create-github-project/issues/91)) ([7d9a29d](https://github.com/nkomiya/create-github-project/commit/7d9a29d7d7bd62b34bc7a9d3a7730c635c2141a1))
+
 ### [0.3.2](https://github.com/nkomiya/create-github-project/compare/v0.3.1...v0.3.2) (2021-07-28)
 
 
