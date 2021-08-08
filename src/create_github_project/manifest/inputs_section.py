@@ -4,6 +4,17 @@ from typing import Dict, List
 class InputsSection:
     """manifest file の inputs セクションを管理するクラス。
 
+    inputs セクションでは、下記形式の yaml を想定する。
+
+    .. code-block: yaml
+
+        assets:
+        - name: "<パラメータの名前>"
+          type: "<パラメータの型>"
+          # その他 type 固有のパラメータ
+          param1: ...
+          param2: ...
+
     Args:
         config (List[Dict[str, object]]): inputs セクションを表す辞書
     """

@@ -6,6 +6,15 @@ from jinja2 import Template
 class AssetsSection:
     """manifest file の assets セクションを管理するクラス。
 
+    assets セクションでは、下記形式の yaml を想定する。
+
+    .. code-block: yaml
+
+        assets:
+        - name: "<テンプレートに含める component の名前>"
+          if: "<component をテンプレートに含める Jinja の式>"
+          to: "<Git のルートディレクトリからのパス>"
+
     Args:
         config (List[Dict[str, object]]): assets セクションを表す辞書
     """
