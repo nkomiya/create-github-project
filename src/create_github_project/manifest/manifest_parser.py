@@ -114,8 +114,8 @@ class ManifestParser:
 
         msg = []
         for f in self._follow_ups:
-            if Template(f['if']).render(**params) == 'True':
+            if Template(f.get('if', 'True')).render(**params) == 'True':
                 content = '\n'.join(' ' * indent + line for line in f['content'].split('\n'))
                 msg.append(content)
 
-        return '\n'.join(msg)
+        return '\n\n'.join(msg)
