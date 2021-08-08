@@ -67,7 +67,7 @@ def to_remote_urls(type_: str, name: Union[str, None]) -> Tuple[Union[str, None]
         elif type_ in ('gsr'):
             name = questionary.text('Remote repository name?').unsafe_ask()
         else:
-            raise NotImplementedError(f'Unsupported repository type `{type_}`.')  # pragma: no cover
+            raise NotImplementedError(f'Unsupported repository type `{type_}`.')
 
     # validate branch name
     if name != '${GITHUB_REPOSITORY}':
@@ -89,4 +89,4 @@ def to_remote_urls(type_: str, name: Union[str, None]) -> Tuple[Union[str, None]
             'compareUrlFormat': base + '/+/refs/tags/{{currentTag}}...refs/tags/{{previousTag}}'
         }, None
     else:
-        raise NotImplementedError(f'Unsupported repository type `{type_}`.')  # pragma: no cover
+        raise NotImplementedError(f'Unsupported repository type `{type_}`.')
